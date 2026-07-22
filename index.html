@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Shashank B R — GenAI & Robotics Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #05080d;
+    --ink: #e8f1f7;
+    --dim: #8fa6b6;
+    --accent: #34e0d4;
+    --accent2: #6aa9ff;
+    --panel-bg: rgba(8, 15, 22, 0.72);
+    --panel-line: rgba(52, 224, 212, 0.35);
+    --display: "Space Grotesk", system-ui, sans-serif;
+    --body: "Inter", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* The canvas sits fixed behind; the scroll container in front receives events */
+  #scene {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+    touch-action: pan-y;
+  }
+
+  /* Tall scroll driver — the topmost element, so it receives pointer/touch */
+  #scroll {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    touch-action: pan-y;
+  }
+  .step {
+    height: 100svh;
+    height: 100dvh;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  /* ---------- Overlay chrome ---------- */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .wordmark {
+    position: fixed;
+    top: max(18px, env(safe-area-inset-top));
+    left: 22px;
+    font-family: var(--display);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    font-size: 13px;
+    color: var(--ink);
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    mix-blend-mode: screen;
+  }
+  .wordmark .dot { color: var(--accent); }
+
+  #progress {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    z-index: 4;
+  }
+  #progress .tick {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid rgba(143, 166, 182, 0.5);
+    background: transparent;
+    transition: all 0.35s ease;
+  }
+  #progress .tick.on {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    transform: scale(1.35);
+  }
+
+  #hint {
+    position: fixed;
+    bottom: max(26px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    color: var(--dim);
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    text-align: center;
+  }
+  #hint .arrow {
+    display: block;
+    margin: 8px auto 0;
+    width: 1px;
+    height: 26px;
+    background: linear-gradient(var(--accent), transparent);
+    animation: bob 1.8s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); opacity: 0.9; }
+    50% { transform: translateY(7px); opacity: 0.3; }
+  }
+
+  /* ---------- Overture ---------- */
+  #overture {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8vw;
+    pointer-events: none;
+    transition: opacity 0.9s ease;
+  }
+  #overture .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.34em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  #overture h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(42px, 9vw, 118px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 40px rgba(52, 224, 212, 0.25);
+  }
+  #overture .role {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(15px, 2.4vw, 24px);
+    color: var(--accent2);
+    margin-top: 18px;
+    letter-spacing: 0.01em;
+  }
+  #overture .hook {
+    max-width: 620px;
+    margin-top: 22px;
+    font-size: clamp(14px, 1.7vw, 17px);
+    line-height: 1.6;
+    color: var(--dim);
+  }
+
+  /* ---------- Station panels ---------- */
+  #panels { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+
+  .panel {
+    position: absolute;
+    max-width: 430px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--panel-line);
+    border-radius: 4px;
+    padding: 26px 28px 28px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  /* Landscape: side column on the left */
+  .panel {
+    left: 5vw;
+    top: 50%;
+    margin-top: -140px;
+  }
+  .panel.visible { opacity: 1; transform: translateY(0); }
+
+  .panel .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .panel .kicker::before {
+    content: "";
+    width: 22px; height: 1px;
+    background: var(--accent);
+  }
+  .panel h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(21px, 2.6vw, 28px);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+  .panel p {
+    font-size: 14px;
+    line-height: 1.62;
+    color: var(--dim);
+    margin-bottom: 11px;
+  }
+  .panel p strong { color: var(--ink); font-weight: 600; }
+  .panel .meta {
+    margin-top: 16px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(143, 166, 182, 0.18);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    color: var(--accent2);
+    line-height: 1.7;
+  }
+  .panel .links a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(52, 224, 212, 0.4);
+    pointer-events: auto;
+  }
+  .panel.contact .links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .panel.contact .links a {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    border: none;
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .panel.contact .links a .lbl {
+    color: var(--dim);
+    min-width: 64px;
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+  }
+
+  /* ---------- Portrait: card across lower third ---------- */
+  @media (orientation: portrait), (max-width: 720px) {
+    .panel {
+      left: 50%;
+      right: auto;
+      transform: translate(-50%, 0);
+      top: auto;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      margin-top: 0;
+      width: 90vw;
+      max-width: 90vw;
+      padding: 20px 20px 22px;
+    }
+    .panel.visible { transform: translate(-50%, 0); }
+    .panel p { font-size: 13.5px; }
+    #progress { right: 12px; }
+  }
+
+  #noscript-note { display: none; }
+
+  .fadeout { opacity: 0 !important; pointer-events: none !important; }
+</style>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <div id="overture">
+    <div class="kicker">Autonomous Systems Lab — Bengaluru</div>
+    <h1>Shashank<br>B R</h1>
+    <div class="role">GenAI &amp; Robotics Engineer · Perception · Agentic AI</div>
+    <p class="hook">I ship end-to-end, sensor-to-UI: LLM planning layers that turn natural language into schema-validated robot actions, perception stacks that run in real time, and the web and mobile layers around them. Walk the lab — every bench is one thing I've built.</p>
+  </div>
+
+  <div id="panels"></div>
+
+  <div id="overlay">
+    <div class="wordmark">SHASHANK<span class="dot">.</span>BR</div>
+    <div id="hint">Scroll to walk the lab<span class="arrow"></span></div>
+  </div>
+  <div id="progress"></div>
+
+  <div id="scroll"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+// ---------------------------------------------------------------------------
+// sRGB helper — author colours in sRGB, three converts on read (ColorManagement on)
+// ---------------------------------------------------------------------------
+THREE.ColorManagement.enabled = true;
+const C = (hex) => new THREE.Color().setStyle(hex); // setStyle treats hex as sRGB
+
+const isMobile = matchMedia('(max-width: 720px), (orientation: portrait)').matches
+  || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+// ---------------------------------------------------------------------------
+// Station content (facts only from résumé)
+// ---------------------------------------------------------------------------
+const STATIONS = [
+  {
+    id: 'education',
+    kicker: 'Foundations',
+    title: 'Where the schematics started',
+    html: `
+      <p><strong>B.E., Information Science &amp; Engineering</strong> at Global Academy of Technology — the drafting table where the fundamentals were laid down.</p>
+      <p>CGPA <strong>7.81 / 10.0</strong>. Coursework in Data Structures, Algorithms, Operating Systems, Computer Networks, Object-Oriented Programming (Java) and Big Data Analytics.</p>`,
+    meta: 'B.E. ISE · Global Academy of Technology · Dec 2021 – Jun 2025',
+  },
+  {
+    id: 'intern',
+    kicker: 'ARTPARK · Internship',
+    title: 'The voice console and the first swarm',
+    html: `
+      <p>Shipped a full-stack <strong>real-time speech-to-speech assistant</strong> — STT → LLM reasoning → TTS on the Gemini API — from conversational prototype to a production voice-interaction pipeline.</p>
+      <p>Designed an <strong>MCP-based OpenRMF architecture</strong> for multi-robot coordination with an embedded AI agent, integrating ROS2, Nav2 and SLAM with LiDAR and Intel RealSense depth on the Rigbetel Diadem platform.</p>`,
+    meta: 'AI & Robotics Intern · ARTPARK, IISc · Apr – Jun 2025',
+  },
+  {
+    id: 'perception',
+    kicker: 'ARTPARK · Associate Engineer',
+    title: 'Calibrating the world before the robot moves',
+    html: `
+      <p>Validated navigation-stack <strong>pose and coordinate-transform accuracy</strong> pre-deployment, reconstructing dense 3D scene maps from multi-view imagery with <strong>COLMAP</strong>.</p>
+      <p>Ran <strong>Isaac Sim</strong> navigation trials across simulated environments to catch localization errors before real-world robot bring-up.</p>`,
+    meta: 'Associate Engineer, GenAI & Robotics · ARTPARK, IISc · Jul 2025 – Present',
+  },
+  {
+    id: 'stack',
+    kicker: 'ARTPARK · Vision Analytics',
+    title: 'Choosing the model, then making it fast',
+    html: `
+      <p>Benchmarked LLMs and VLMs — <strong>Cosmos-Reason1, Cosmos-Predict1, LLaVA, Qwen-VL</strong> — to drive the production perception-model choice for a live vision-analytics platform.</p>
+      <p>Replaced the NVIDIA Cosmos stack with a lighter <strong>LLaVA / Qwen-VL pipeline fused with SAM2 and Grounding DINO v2</strong>, cutting GPU overhead and improving spatial grounding.</p>
+      <p>Cut chatbot end-to-end latency <strong>30%</strong> via parallelized gRPC LLM request handling, and built the platform's <strong>Flutter</strong> Android app.</p>`,
+    meta: 'Associate Engineer · ARTPARK, IISc · 2025 – Present',
+  },
+  {
+    id: 'nayantra',
+    kicker: 'Project · Open Source',
+    title: 'Nayantra — the robot that replans itself',
+    html: `
+      <p>Architected a closed-loop <strong>plan-act-observe agentic system</strong>: an LLM planning layer resolves natural-language goals into <strong>schema-validated MCP tool calls</strong> dispatched to ROS2 Nav2.</p>
+      <p>It monitors execution in real time and <strong>autonomously replans on failure</strong> — running on physical hardware, not just in sim.</p>`,
+    meta: 'Nayantra · github.com/shashankbr27/nayantra · Mar 2026 – Present',
+  },
+  {
+    id: 'amar',
+    kicker: 'Project',
+    title: 'AMAR — a reasoning core that remembers',
+    html: `
+      <p>Built a full-stack agentic platform with <strong>multi-provider LLM routing, persistent memory, async job execution and recursive reasoning loops</strong>.</p>
+      <p>Raised task-confidence from <strong>68% to 90%+</strong> across 500 benchmarks, at <strong>99.2% uptime over 60 days</strong>.</p>`,
+    meta: 'AMAR — Autonomous Memory Agentic Reasoning · Nov 2025 – Present',
+  },
+  {
+    id: 'cosmic',
+    kicker: 'Project',
+    title: 'Cosmic Eyes — seeing one step ahead',
+    html: `
+      <p>Built a real-time <strong>scene-understanding and short-horizon prediction</strong> pipeline on <strong>Cosmos-Reason1 and Cosmos-Predict1</strong> — the perception rig that reads a scene and forecasts what happens next.</p>`,
+    meta: 'Cosmic Eyes — NVIDIA Cosmos Perception Stack · Apr – Jun 2025',
+  },
+  {
+    id: 'skills',
+    kicker: 'The instrument wall',
+    title: 'Everything wired to the bench',
+    html: `
+      <p><strong>Robotics &amp; Motion:</strong> ROS2, Nav2, SLAM, AMCL, tf2 pose estimation, OpenRMF, Isaac Sim, Gazebo, RViz.</p>
+      <p><strong>Agentic AI &amp; LLMs:</strong> MCP tool orchestration, structured tool-calling, RAG, fine-tuning, multi-provider routing (OpenAI, Gemini, Groq, Claude).</p>
+      <p><strong>Vision &amp; Stack:</strong> RT-DETR, YOLO, SAM2, Qwen-VL, LLaVA · React/FastAPI, gRPC, WebSockets, Flutter · Python, C++, Java, Docker, Linux.</p>`,
+    meta: 'Selected tooling across robotics, agentic AI, perception and full-stack',
+  },
+  {
+    id: 'contact',
+    kicker: 'Exit terminal',
+    title: "Let's build the next one",
+    contact: true,
+    html: `
+      <div class="links">
+        <a href="mailto:shashank1ga21is147@gmail.com"><span class="lbl">Email</span>shashank1ga21is147@gmail.com</a>
+        <a href="tel:+919591939431"><span class="lbl">Phone</span>+91 959-193-9431</a>
+        <a href="https://linkedin.com/in/shashankbr2709" target="_blank" rel="noopener"><span class="lbl">LinkedIn</span>linkedin.com/in/shashankbr2709</a>
+        <a href="https://github.com/shashankbr27" target="_blank" rel="noopener"><span class="lbl">GitHub</span>github.com/shashankbr27</a>
+      </div>`,
+    meta: 'Bengaluru, KA · open to GenAI & Robotics work',
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Renderer / scene / camera
+// ---------------------------------------------------------------------------
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = !isMobile;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
+
+const scene = new THREE.Scene();
+scene.background = C('#05080d');
+scene.fog = new THREE.FogExp2(C('#05080d'), 0.021);
+
+const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 400);
+camera.position.set(0, 1.7, -6);
+
+// Environment for metal reflections
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+// ---------------------------------------------------------------------------
+// Layout constants — one long hall along +Z
+// ---------------------------------------------------------------------------
+const STATION_GAP = 13;
+const FIRST_Z = 6;
+const HALL_W = 15;
+const HALL_H = 6.4;
+const stationZ = (i) => FIRST_Z + i * STATION_GAP;
+const LAST_Z = stationZ(STATIONS.length - 1);
+const HALL_LEN = LAST_Z + 14;
+
+// ---------------------------------------------------------------------------
+// Shared materials & canvas-texture helpers
+// ---------------------------------------------------------------------------
+const matFloor = new THREE.MeshStandardMaterial({ color: C('#0b1219'), roughness: 0.35, metalness: 0.6 });
+const matWall = new THREE.MeshStandardMaterial({ color: C('#0d151d'), roughness: 0.85, metalness: 0.1 });
+const matCeil = new THREE.MeshStandardMaterial({ color: C('#080d13'), roughness: 0.9, metalness: 0.05 });
+const matSteel = new THREE.MeshStandardMaterial({ color: C('#8894a0'), roughness: 0.28, metalness: 0.95 });
+const matDark = new THREE.MeshStandardMaterial({ color: C('#161d26'), roughness: 0.6, metalness: 0.5 });
+const matWhitePlastic = new THREE.MeshStandardMaterial({ color: C('#d6dde4'), roughness: 0.5, metalness: 0.05 });
+const matAccent = new THREE.MeshStandardMaterial({ color: C('#0f2a2c'), emissive: C('#34e0d4'), emissiveIntensity: 1.4, roughness: 0.4, metalness: 0.2 });
+const matBlue = new THREE.MeshStandardMaterial({ color: C('#12233d'), emissive: C('#6aa9ff'), emissiveIntensity: 1.1, roughness: 0.4, metalness: 0.2 });
+
+function makeScreenTexture(draw, w = 512, h = 256) {
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const g = cv.getContext('2d');
+  draw(g, w, h);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+function screenMat(draw, w, h) {
+  const tex = makeScreenTexture(draw, w, h);
+  return new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.9, roughness: 0.5, metalness: 0.1 });
+}
+
+// ---------------------------------------------------------------------------
+// The room
+// ---------------------------------------------------------------------------
+function buildRoom() {
+  const room = new THREE.Group();
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(HALL_W, HALL_LEN + 20), matFloor);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.set(0, 0, HALL_LEN / 2 - 4);
+  floor.receiveShadow = true;
+  room.add(floor);
+
+  // subtle floor grid guide lines (emissive strip down the middle)
+  const runner = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.16, HALL_LEN + 16),
+    new THREE.MeshStandardMaterial({ color: C('#0a1a1c'), emissive: C('#1f8f88'), emissiveIntensity: 0.8, roughness: 0.6 })
+  );
+  runner.rotation.x = -Math.PI / 2;
+  runner.position.set(0, 0.01, HALL_LEN / 2 - 4);
+  room.add(runner);
+
+  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(HALL_W, HALL_LEN + 20), matCeil);
+  ceil.rotation.x = Math.PI / 2;
+  ceil.position.set(0, HALL_H, HALL_LEN / 2 - 4);
+  room.add(ceil);
+
+  const wallGeo = new THREE.PlaneGeometry(HALL_LEN + 20, HALL_H);
+  const wallL = new THREE.Mesh(wallGeo, matWall);
+  wallL.rotation.y = Math.PI / 2;
+  wallL.position.set(-HALL_W / 2, HALL_H / 2, HALL_LEN / 2 - 4);
+  wallL.receiveShadow = true;
+  room.add(wallL);
+  const wallR = wallL.clone();
+  wallR.rotation.y = -Math.PI / 2;
+  wallR.position.x = HALL_W / 2;
+  room.add(wallR);
+
+  // back wall (behind the overture / start)
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(HALL_W, HALL_H), matWall);
+  back.position.set(0, HALL_H / 2, -9);
+  room.add(back);
+
+  // Ceiling light panels — emissive geometry, cheap. Also they are the main "fixtures".
+  const panelMat = new THREE.MeshStandardMaterial({ color: C('#0b1416'), emissive: C('#bfeef0'), emissiveIntensity: 1.7, roughness: 0.4 });
+  const nPanels = Math.floor((HALL_LEN + 10) / 6);
+  for (let i = 0; i < nPanels; i++) {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 1.1), panelMat);
+    p.position.set(0, HALL_H - 0.08, i * 6 - 4);
+    room.add(p);
+    // thin accent runners on the ceiling edges
+  }
+
+  // Wall accent strips (emissive) running the length, low glow
+  const stripMat = new THREE.MeshStandardMaterial({ color: C('#08201f'), emissive: C('#34e0d4'), emissiveIntensity: 0.9, roughness: 0.5 });
+  [-1, 1].forEach((s) => {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, HALL_LEN + 16), stripMat);
+    strip.position.set(s * (HALL_W / 2 - 0.05), 1.1, HALL_LEN / 2 - 4);
+    room.add(strip);
+  });
+
+  return room;
+}
+scene.add(buildRoom());
+
+// ---------------------------------------------------------------------------
+// Object builders — one per station. Placed alternately on left / right.
+// Each returns a Group centred at origin, standing on the floor (y=0).
+// ---------------------------------------------------------------------------
+
+// 0. EDUCATION — drafting / blueprint table with an inclined schematic board
+function buildEducation() {
+  const g = new THREE.Group();
+  // table top
+  const top = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.08, 1.2), matDark);
+  top.position.y = 0.95; top.castShadow = true; g.add(top);
+  // legs
+  for (const [x, z] of [[-1, -0.5], [1, -0.5], [-1, 0.5], [1, 0.5]]) {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.95, 0.08), matSteel);
+    leg.position.set(x, 0.475, z); g.add(leg);
+  }
+  // inclined board with blueprint texture
+  const boardMat = screenMat((c, w, h) => {
+    c.fillStyle = '#0a2740'; c.fillRect(0, 0, w, h);
+    c.strokeStyle = 'rgba(120,180,240,0.35)'; c.lineWidth = 1;
+    for (let x = 0; x <= w; x += 24) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke(); }
+    for (let y = 0; y <= h; y += 24) { c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke(); }
+    c.strokeStyle = '#9fd0ff'; c.lineWidth = 2.5;
+    c.strokeRect(70, 60, 150, 110);
+    c.beginPath(); c.arc(360, 130, 55, 0, Math.PI * 2); c.stroke();
+    c.beginPath(); c.moveTo(220, 115); c.lineTo(305, 115); c.stroke();
+    c.fillStyle = '#cfe6ff'; c.font = '16px monospace';
+    c.fillText('ISE · v1.0', 72, 210);
+  }, 512, 320);
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 1.2), boardMat);
+  board.position.set(0, 1.55, 0.1);
+  board.rotation.x = -0.32;
+  g.add(board);
+  // a couple of stacked books
+  const book = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.34), new THREE.MeshStandardMaterial({ color: C('#1c3a5e'), roughness: 0.7 }));
+  book.position.set(0.75, 1.05, 0.2); g.add(book);
+  const book2 = book.clone(); book2.material = new THREE.MeshStandardMaterial({ color: C('#245a52'), roughness: 0.7 });
+  book2.position.set(0.72, 1.16, 0.22); book2.rotation.y = 0.15; g.add(book2);
+  return g;
+}
+
+// 1. INTERNSHIP — voice console with waveform screen + two small paired robots
+function buildIntern() {
+  const g = new THREE.Group();
+  // console body
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.1, 0.7), matDark);
+  body.position.y = 0.55; body.castShadow = true; g.add(body);
+  // angled top face
+  const topFace = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.5, 0.7), matDark);
+  topFace.position.set(0, 1.2, -0.02); topFace.rotation.x = -0.5; g.add(topFace);
+  // waveform screen
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.62), screenMat((c, w, h) => {
+    c.fillStyle = '#04141a'; c.fillRect(0, 0, w, h);
+    c.strokeStyle = '#34e0d4'; c.lineWidth = 3; c.beginPath();
+    for (let x = 0; x < w; x++) {
+      const y = h / 2 + Math.sin(x * 0.06) * 40 * Math.exp(-Math.abs(x - w / 2) / 220) + Math.sin(x * 0.21) * 14;
+      x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.stroke();
+    c.fillStyle = '#6aa9ff'; c.font = '18px monospace';
+    c.fillText('STT → LLM → TTS', 20, 34);
+  }, 512, 200));
+  screen.position.set(0, 1.24, 0.16); screen.rotation.x = -0.5; g.add(screen);
+  // two small paired robots (multi-robot coordination) beside it
+  for (const dx of [-1.35, 1.35]) {
+    const bot = new THREE.Group();
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.18, 20), matWhitePlastic);
+    base.position.y = 0.09; bot.add(base);
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.22, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2), matWhitePlastic);
+    dome.position.y = 0.18; bot.add(dome);
+    const eye = new THREE.Mesh(new THREE.CircleGeometry(0.05, 16), matAccent);
+    eye.position.set(0, 0.28, 0.2); bot.add(eye);
+    bot.position.set(dx, 0, 0.2);
+    g.add(bot);
+  }
+  return g;
+}
+
+// 2. PERCEPTION — articulated robot arm on a calibration bench w/ XYZ gizmo
+function buildPerception() {
+  const g = new THREE.Group();
+  const bench = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.7, 1.1), matDark);
+  bench.position.y = 0.35; bench.castShadow = true; g.add(bench);
+
+  const arm = new THREE.Group();
+  arm.position.set(-0.2, 0.7, 0);
+  const j0 = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 0.2, 24), matSteel);
+  j0.position.y = 0.1; arm.add(j0);
+  const link1 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.9, 0.16), matWhitePlastic);
+  link1.position.set(0, 0.6, 0); link1.rotation.z = 0.35; arm.add(link1);
+  const j1 = new THREE.Mesh(new THREE.SphereGeometry(0.15, 18, 14), matSteel);
+  j1.position.set(-0.31, 1.02, 0); arm.add(j1);
+  const link2 = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.8, 0.13), matWhitePlastic);
+  link2.position.set(-0.05, 1.35, 0); link2.rotation.z = -0.7; arm.add(link2);
+  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.22, 0.1), matSteel);
+  grip.position.set(0.24, 1.62, 0); arm.add(grip);
+  g.add(arm);
+
+  // XYZ coordinate gizmo (tf2 / coordinate transforms)
+  const axes = [[C('#ff5566'), [0.6, 0, 0], [0, 0, -Math.PI / 2]], [C('#66ff88'), [0, 0.6, 0], [0, 0, 0]], [C('#5599ff'), [0, 0, 0.6], [Math.PI / 2, 0, 0]]];
+  const gizmo = new THREE.Group();
+  for (const [col, pos, rot] of axes) {
+    const ax = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.6, 8),
+      new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.9, roughness: 0.4 }));
+    ax.position.set(pos[0] / 2, pos[1] / 2, pos[2] / 2); ax.rotation.set(rot[0], rot[1], rot[2]);
+    gizmo.add(ax);
+  }
+  gizmo.position.set(0.7, 0.72, 0.35);
+  g.add(gizmo);
+  return g;
+}
+
+// 3. STACK — GPU server rack with glowing units + benchmark screen
+function buildStack() {
+  const g = new THREE.Group();
+  const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 2.5, 1.0), matDark);
+  cab.position.y = 1.25; cab.castShadow = true; g.add(cab);
+  // rack units — emissive front strips
+  const unitFront = new THREE.MeshStandardMaterial({ color: C('#0c1418'), emissive: C('#34e0d4'), emissiveIntensity: 0.7, roughness: 0.5 });
+  for (let i = 0; i < 8; i++) {
+    const u = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.2, 0.04), unitFront);
+    u.position.set(0, 0.35 + i * 0.26, 0.51); g.add(u);
+    // little indicator dots
+    const led = new THREE.Mesh(new THREE.CircleGeometry(0.018, 8), i % 3 === 0 ? matBlue : matAccent);
+    led.position.set(0.48, 0.35 + i * 0.26, 0.531); g.add(led);
+  }
+  // benchmark screen on a side stand
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.7), screenMat((c, w, h) => {
+    c.fillStyle = '#04141a'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#6aa9ff'; c.font = '20px monospace'; c.fillText('LATENCY  -30%', 24, 40);
+    const bars = [0.9, 0.62, 0.55, 0.4];
+    const labels = ['Cosmos', 'LLaVA', 'Qwen-VL', 'fused'];
+    bars.forEach((b, i) => {
+      c.fillStyle = i === 3 ? '#34e0d4' : '#1f6f78';
+      c.fillRect(24, 70 + i * 42, b * (w - 120), 28);
+      c.fillStyle = '#cfe6ff'; c.font = '15px monospace';
+      c.fillText(labels[i], w - 90, 92 + i * 42);
+    });
+  }, 512, 360));
+  screen.position.set(1.15, 1.5, 0.2); screen.rotation.y = -0.5; g.add(screen);
+  return g;
+}
+
+// 4. NAYANTRA — autonomous mobile rover with spinning LiDAR, on a floor map
+function buildNayantra() {
+  const g = new THREE.Group();
+  // floor nav map decal
+  const map = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), screenMat((c, w, h) => {
+    c.fillStyle = '#04141a'; c.fillRect(0, 0, w, h);
+    c.strokeStyle = 'rgba(52,224,212,0.25)'; c.lineWidth = 1;
+    for (let x = 0; x <= w; x += 32) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke(); }
+    for (let y = 0; y <= h; y += 32) { c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke(); }
+    // planned path
+    c.strokeStyle = '#34e0d4'; c.lineWidth = 4; c.setLineDash([10, 8]);
+    c.beginPath(); c.moveTo(80, 380); c.lineTo(200, 250); c.lineTo(300, 300); c.lineTo(420, 120); c.stroke();
+    c.setLineDash([]);
+    c.fillStyle = '#6aa9ff'; c.beginPath(); c.arc(80, 380, 12, 0, 6.3); c.fill();
+    c.fillStyle = '#ff6b6b'; c.beginPath(); c.arc(420, 120, 12, 0, 6.3); c.fill();
+  }, 512, 512));
+  map.rotation.x = -Math.PI / 2; map.position.set(0, 0.02, 0); g.add(map);
+
+  const rover = new THREE.Group();
+  const chassis = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.28, 1.2), matWhitePlastic);
+  chassis.position.y = 0.28; chassis.castShadow = true; rover.add(chassis);
+  const wheelGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.12, 18);
+  for (const [x, z] of [[-0.5, -0.4], [0.5, -0.4], [-0.5, 0.4], [0.5, 0.4]]) {
+    const wh = new THREE.Mesh(wheelGeo, new THREE.MeshStandardMaterial({ color: C('#101418'), roughness: 0.8 }));
+    wh.rotation.z = Math.PI / 2; wh.position.set(x, 0.18, z); rover.add(wh);
+  }
+  // sensor mast + LiDAR puck (rotates)
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.35, 10), matSteel);
+  mast.position.set(0, 0.58, -0.1); rover.add(mast);
+  const lidar = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.14, 24),
+    new THREE.MeshStandardMaterial({ color: C('#1a2028'), emissive: C('#34e0d4'), emissiveIntensity: 0.6, roughness: 0.5, metalness: 0.4 }));
+  lidar.position.set(0, 0.8, -0.1); rover.add(lidar);
+  rover.userData.lidar = lidar;
+  const cam = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.08), matDark);
+  cam.position.set(0, 0.42, 0.6); rover.add(cam);
+  g.add(rover);
+  g.userData.rover = rover;
+  return g;
+}
+
+// 5. AMAR — glowing memory/reasoning core (obelisk with rings of light)
+function buildAmar() {
+  const g = new THREE.Group();
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.85, 0.3, 6), matDark);
+  base.position.y = 0.15; base.castShadow = true; g.add(base);
+  const core = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 2.6, 6),
+    new THREE.MeshStandardMaterial({ color: C('#0a1620'), roughness: 0.35, metalness: 0.7 }));
+  core.position.y = 1.6; core.castShadow = true; g.add(core);
+  // rings of light stacked (memory layers)
+  const rings = new THREE.Group();
+  for (let i = 0; i < 7; i++) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 8, 32),
+      new THREE.MeshStandardMaterial({ color: C('#08201f'), emissive: i % 2 ? C('#6aa9ff') : C('#34e0d4'), emissiveIntensity: 1.3, roughness: 0.4 }));
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0.6 + i * 0.34;
+    rings.add(ring);
+  }
+  g.add(rings);
+  g.userData.rings = rings;
+  // top emitter
+  const top = new THREE.Mesh(new THREE.OctahedronGeometry(0.28), matAccent);
+  top.position.y = 3.1; g.add(top);
+  g.userData.top = top;
+  return g;
+}
+
+// 6. COSMIC EYES — pan-tilt camera head with lens cluster on a stand
+function buildCosmic() {
+  const g = new THREE.Group();
+  const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.14, 1.4, 12), matSteel);
+  stand.position.y = 0.7; g.add(stand);
+  const tripodBase = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.06, 20), matDark);
+  tripodBase.position.y = 0.03; g.add(tripodBase);
+  const head = new THREE.Group();
+  head.position.y = 1.5;
+  const housing = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.5, 0.5), matWhitePlastic);
+  housing.castShadow = true; head.add(housing);
+  // three lenses (perception cluster)
+  for (const [x, y] of [[-0.2, 0.08], [0.2, 0.08], [0, -0.14]]) {
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.16, 20), matDark);
+    ring.rotation.x = Math.PI / 2; ring.position.set(x, y, 0.28); head.add(ring);
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.1, 20),
+      new THREE.MeshStandardMaterial({ color: C('#0a2030'), emissive: C('#6aa9ff'), emissiveIntensity: 0.7, roughness: 0.15, metalness: 0.6 }));
+    lens.position.set(x, y, 0.37); head.add(lens);
+  }
+  g.add(head);
+  g.userData.head = head;
+  return g;
+}
+
+// 7. SKILLS — instrument wall: grid of emissive tiles/gauges on a panel
+function buildSkills() {
+  const g = new THREE.Group();
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.2, 0.15), matDark);
+  panel.position.y = 1.7; g.add(panel);
+  const cols = 6, rows = 4;
+  for (let r = 0; r < rows; r++) {
+    for (let cI = 0; cI < cols; cI++) {
+      const on = (r * cols + cI) % 3 !== 0;
+      const tile = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.28, 0.06),
+        new THREE.MeshStandardMaterial({
+          color: C('#0c1418'),
+          emissive: ((r + cI) % 2) ? C('#34e0d4') : C('#6aa9ff'),
+          emissiveIntensity: on ? 0.9 : 0.15, roughness: 0.5
+        }));
+      tile.position.set(-1.25 + cI * 0.5, 0.95 + r * 0.5, 0.09); g.add(tile);
+    }
+  }
+  return g;
+}
+
+// 8. CONTACT — exit access terminal (kiosk with screen) + lit doorway
+function buildContact() {
+  const g = new THREE.Group();
+  // lit doorway on the back
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 0.2), matSteel);
+  frame.position.set(0, 1.6, -1.3); g.add(frame);
+  const light = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.6),
+    new THREE.MeshStandardMaterial({ color: C('#0b1416'), emissive: C('#bfeef0'), emissiveIntensity: 1.3, roughness: 0.5 }));
+  light.position.set(0, 1.5, -1.19); g.add(light);
+  // terminal kiosk
+  const post = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.2, 0.4), matDark);
+  post.position.set(0, 0.6, 0.4); g.add(post);
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.5), screenMat((c, w, h) => {
+    c.fillStyle = '#04141a'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#34e0d4'; c.font = 'bold 30px monospace'; c.fillText('ACCESS', 30, 60);
+    c.fillStyle = '#cfe6ff'; c.font = '20px monospace';
+    c.fillText('> connect', 30, 120);
+    c.fillText('> shashank.br', 30, 155);
+    c.fillStyle = '#6aa9ff'; c.fillText('_', 210, 155);
+  }, 400, 288));
+  screen.position.set(0, 1.05, 0.61); screen.rotation.x = -0.3; g.add(screen);
+  return g;
+}
+
+const BUILDERS = [buildEducation, buildIntern, buildPerception, buildStack, buildNayantra, buildAmar, buildCosmic, buildSkills, buildContact];
+
+// ---------------------------------------------------------------------------
+// Place objects + per-station key lights; build camera waypoints
+// ---------------------------------------------------------------------------
+const animated = [];        // objects with per-frame motion
+const waypoints = [];       // { position, lookAt }
+
+// overture waypoint (before station 0) — a step back, looking down the hall
+waypoints.push({ pos: new THREE.Vector3(0, 1.75, -5.5), look: new THREE.Vector3(0, 1.6, 4) });
+
+STATIONS.forEach((st, i) => {
+  const side = i % 2 === 0 ? -1 : 1;         // alternate left / right
+  const z = stationZ(i);
+  const wallX = HALL_W / 2 - 0.5;
+  const objX = side * (wallX - 1.6);
+
+  const grp = BUILDERS[i]();
+  grp.position.set(objX, 0, z);
+  grp.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;   // face the walkway
+  scene.add(grp);
+  st._group = grp;
+  if (grp.userData.rover || grp.userData.rings || grp.userData.head) animated.push(grp);
+
+  // key light for the object (kept few + modest to protect fill-rate)
+  if (!isMobile || i % 2 === 0) {
+    const key = new THREE.PointLight(i % 2 ? C('#8fd0ff') : C('#7ff0e6'), isMobile ? 8 : 14, 12, 2);
+    key.position.set(objX * 0.6, 3.3, z);
+    if (!isMobile) { key.castShadow = true; key.shadow.mapSize.set(512, 512); key.shadow.bias = -0.001; }
+    scene.add(key);
+  }
+
+  // camera waypoint: walk down centre, ease toward the object side, look at it
+  const camX = side * 1.4;
+  const eye = new THREE.Vector3(camX, 1.7, z - 2.2);
+  const look = new THREE.Vector3(objX * 0.72, 1.5, z);
+  waypoints.push({ pos: eye, look });
+});
+
+// trailing waypoint so the last station isn't at the very curve end
+const lastZ = stationZ(STATIONS.length - 1);
+waypoints.push({ pos: new THREE.Vector3(0, 1.7, lastZ + 4), look: new THREE.Vector3(0, 1.5, lastZ + 10) });
+
+// ambient + a soft hemispheric fill
+scene.add(new THREE.AmbientLight(C('#20303c'), 0.6));
+const hemi = new THREE.HemisphereLight(C('#9fd8e6'), C('#0a0f14'), 0.35);
+scene.add(hemi);
+
+// Catmull-Rom curves through the waypoints
+const posCurve = new THREE.CatmullRomCurve3(waypoints.map((w) => w.pos), false, 'catmullrom', 0.5);
+const lookCurve = new THREE.CatmullRomCurve3(waypoints.map((w) => w.look), false, 'catmullrom', 0.5);
+
+// Map a station index (0..n-1) to a curve parameter u in [0,1].
+// Waypoints are: [overture, st0, st1, ... stN-1, trailer]  -> length n+2
+const nPts = waypoints.length;
+const uForStation = (i) => (i + 1) / (nPts - 1);
+const U_OVERTURE = 0;
+
+// ---------------------------------------------------------------------------
+// Scroll driver — build spacer steps (one per station + overture + tail)
+// ---------------------------------------------------------------------------
+const scrollEl = document.getElementById('scroll');
+const nSteps = STATIONS.length + 1;   // overture + each station (tail folded in)
+for (let i = 0; i < nSteps + 1; i++) {
+  const s = document.createElement('div');
+  s.className = 'step';
+  scrollEl.appendChild(s);
+}
+
+// ---------------------------------------------------------------------------
+// Build HTML panels
+// ---------------------------------------------------------------------------
+const panelsEl = document.getElementById('panels');
+const panelEls = STATIONS.map((st) => {
+  const el = document.createElement('div');
+  el.className = 'panel' + (st.contact ? ' contact' : '');
+  el.innerHTML = `
+    <div class="kicker">${st.kicker}</div>
+    <h2>${st.title}</h2>
+    ${st.html}
+    <div class="meta">${st.meta}</div>`;
+  panelsEl.appendChild(el);
+  return el;
+});
+
+// progress ticks
+const progressEl = document.getElementById('progress');
+const ticks = STATIONS.map(() => {
+  const t = document.createElement('div');
+  t.className = 'tick';
+  progressEl.appendChild(t);
+  return t;
+});
+
+// ---------------------------------------------------------------------------
+// State + easing
+// ---------------------------------------------------------------------------
+const overtureEl = document.getElementById('overture');
+const wordmarkEl = document.querySelector('.wordmark');
+const hintEl = document.getElementById('hint');
+
+let targetU = U_OVERTURE;
+let currentU = U_OVERTURE;
+let scrolled = false;
+let activeStation = -1;
+
+// touch look-around (horizontal only)
+let lookYaw = 0, targetYaw = 0;
+let touchStartX = null;
+let portraitLookOffset = 0;   // in portrait, aim lower so the object rides above the card
+
+function readScroll() {
+  const max = scrollEl.scrollHeight - window.innerHeight;
+  const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+  // p in [0,1] over (overture + stations). Overture occupies first step.
+  // Map so overture holds for the first slice, then walk stations.
+  targetU = p;   // curve u already spans overture->trailer across [0,1]
+  if (!scrolled && window.scrollY > 8) {
+    scrolled = true;
+    hintEl.classList.add('fadeout');
+    wordmarkEl.style.opacity = '1';
+    progressEl.style.opacity = '1';
+  }
+  // fade overture out as we leave the door
+  overtureEl.style.opacity = String(Math.max(0, 1 - p * 6));
+  if (p * 6 >= 1) overtureEl.style.pointerEvents = 'none';
+}
+
+window.addEventListener('scroll', readScroll, { passive: true });
+
+// touch look
+window.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+window.addEventListener('touchmove', (e) => {
+  if (touchStartX == null) return;
+  const dx = e.touches[0].clientX - touchStartX;
+  targetYaw = Math.max(-0.28, Math.min(0.28, dx / window.innerWidth * 0.9));
+}, { passive: true });
+window.addEventListener('touchend', () => { touchStartX = null; targetYaw = 0; }, { passive: true });
+// desktop subtle parallax
+window.addEventListener('mousemove', (e) => {
+  if (isMobile) return;
+  targetYaw = (e.clientX / window.innerWidth - 0.5) * 0.16;
+}, { passive: true });
+
+// ---------------------------------------------------------------------------
+// Panel visibility — nearest station to current u
+// ---------------------------------------------------------------------------
+function updatePanels(u) {
+  let best = -1, bestD = Infinity;
+  STATIONS.forEach((st, i) => {
+    const d = Math.abs(u - uForStation(i));
+    if (d < bestD) { bestD = d; best = i; }
+  });
+  // only show a panel when reasonably near a station AND past the overture
+  const near = bestD < (0.5 / (nPts - 1)) * 1.15;
+  const show = near && u > uForStation(0) - (0.6 / (nPts - 1));
+  if (best !== activeStation) {
+    if (activeStation >= 0) panelEls[activeStation].classList.remove('visible');
+    activeStation = best;
+  }
+  panelEls.forEach((el, i) => el.classList.toggle('visible', show && i === best));
+  ticks.forEach((t, i) => t.classList.toggle('on', i === best && show));
+}
+
+// ---------------------------------------------------------------------------
+// Render loop
+// ---------------------------------------------------------------------------
+const _pos = new THREE.Vector3();
+const _look = new THREE.Vector3();
+let frame = 0;
+
+function tick() {
+  frame++;
+  // ease camera param toward target
+  currentU += (targetU - currentU) * 0.075;
+  lookYaw += (targetYaw - lookYaw) * 0.06;
+
+  // idle drift so a still page isn't frozen
+  const drift = Math.sin(frame * 0.006) * 0.02;
+  const u = Math.min(1, Math.max(0, currentU));
+
+  posCurve.getPoint(u, _pos);
+  lookCurve.getPoint(u, _look);
+  camera.position.copy(_pos);
+  camera.position.y += Math.sin(frame * 0.01) * 0.015; // gentle bob
+
+  // apply yaw look-around by rotating the look target around camera
+  _look.x += lookYaw * 6 + drift;
+  _look.y += Math.cos(frame * 0.008) * 0.03 - portraitLookOffset;
+  camera.lookAt(_look);
+
+  // animated objects
+  for (const g of animated) {
+    if (g.userData.rover) g.userData.rover.userData.lidar.rotation.y += 0.05;
+    if (g.userData.rings) { g.userData.rings.rotation.y += 0.004; g.userData.top.rotation.y += 0.02; g.userData.top.rotation.x += 0.01; }
+    if (g.userData.head) g.userData.head.rotation.y = Math.sin(frame * 0.01) * 0.4;
+  }
+
+  updatePanels(u);
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+
+// ---------------------------------------------------------------------------
+// Resize (debounced, ignore height-only churn from mobile URL bars)
+// ---------------------------------------------------------------------------
+let lastW = window.innerWidth, lastH = window.innerHeight, resizeT = null;
+function doResize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(w, h);
+  // widen lens in portrait so horizontal field stays ~constant
+  const base = 58;
+  if (h > w) {
+    const aspect = w / h;
+    let fov = 2 * Math.atan(Math.tan((base * Math.PI / 180) / 2) / aspect) * 180 / Math.PI;
+    camera.fov = Math.min(80, fov);
+    portraitLookOffset = 0.85;
+  } else {
+    camera.fov = base;
+    portraitLookOffset = 0;
+  }
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', () => {
+  const w = window.innerWidth, h = window.innerHeight;
+  if (w === lastW && Math.abs(h - lastH) < 120) { lastH = h; return; } // height-only churn
+  lastW = w; lastH = h;
+  clearTimeout(resizeT);
+  resizeT = setTimeout(doResize, 150);
+}, { passive: true });
+
+// disable scroll restoration so every visit starts at the door
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
+// ---------------------------------------------------------------------------
+// Debug hook
+// ---------------------------------------------------------------------------
+function debugChrome(p) {
+  // mirror the scroll-driven overture/chrome state for a given progress p
+  overtureEl.style.opacity = String(Math.max(0, 1 - p * 6));
+  overtureEl.style.pointerEvents = 'none';
+  const on = p > 0.001;
+  hintEl.classList.toggle('fadeout', on);
+  wordmarkEl.style.opacity = on ? '1' : '0';
+  progressEl.style.opacity = on ? '1' : '0';
+  scrolled = on;
+}
+window.__x = {
+  seek(p) { targetU = currentU = Math.min(1, Math.max(0, p)); debugChrome(currentU); },
+  station(i) { targetU = currentU = uForStation(i); debugChrome(currentU); },
+  look(x, y, z) { camera.lookAt(x, y, z); renderer.render(scene, camera); },
+  info() { return { nPts, stations: STATIONS.length, u: currentU }; },
+};
+
+doResize();
+readScroll();
+tick();
+
+// reveal hint shortly after load
+setTimeout(() => { if (!scrolled) hintEl.style.opacity = '1'; }, 900);
+</script>
+</body>
+</html>
