@@ -426,7 +426,7 @@ const STATIONS = [
       <div class="links">
         <a href="mailto:shashank1ga21is147@gmail.com"><span class="lbl">Email</span>shashank1ga21is147@gmail.com</a>
         <a href="tel:+919591939431"><span class="lbl">Phone</span>+91 959-193-9431</a>
-        <a href="https://linkedin.com/in/shashankbr2709" target="_blank" rel="noopener"><span class="lbl">LinkedIn</span>linkedin.com/in/shashankbr2709</a>
+        <a href="https://linkedin.com/in/shashankbr2709" target="_blank" rel="noopener"><span class="lbl">LinkedIn</span>Shashank B R</a>
         <a href="https://github.com/shashankbr27" target="_blank" rel="noopener"><span class="lbl">GitHub</span>github.com/shashankbr27</a>
       </div>`,
     meta: 'Bengaluru, KA · open to GenAI & Robotics work',
@@ -600,30 +600,63 @@ function buildEducation() {
   return g;
 }
 
-// 1. INTERNSHIP — voice console with waveform screen + two small paired robots
+// 1. INTERNSHIP — voice workstation: upright waveform monitor on a desk,
+//    a mic (voice), and two small paired robots (multi-robot coordination)
 function buildIntern() {
   const g = new THREE.Group();
-  // console body
-  const body = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.1, 0.7), matDark);
-  body.position.y = 0.55; body.castShadow = true; g.add(body);
-  // angled top face
-  const topFace = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.5, 0.7), matDark);
-  topFace.position.set(0, 1.2, -0.02); topFace.rotation.x = -0.5; g.add(topFace);
-  // waveform screen
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.62), screenMat((c, w, h) => {
+
+  // desk / console base
+  const desk = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.14, 0.85), matDark);
+  desk.position.y = 0.92; desk.castShadow = true; g.add(desk);
+  for (const dx of [-0.78, 0.78]) {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.86, 0.7), matSteel);
+    leg.position.set(dx, 0.45, 0); g.add(leg);
+  }
+  // small control deck lip on the desk
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.34),
+    new THREE.MeshStandardMaterial({ color: C('#0c1418'), emissive: C('#1f6f78'), emissiveIntensity: 0.5, roughness: 0.5 }));
+  deck.position.set(0, 1.0, 0.24); g.add(deck);
+
+  // upright monitor bezel on a short stand, facing the walkway
+  const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.28, 12), matSteel);
+  stand.position.set(0, 1.13, -0.15); g.add(stand);
+  const bezel = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.92, 0.09), matDark);
+  bezel.position.set(0, 1.72, -0.18); bezel.rotation.x = -0.12; bezel.castShadow = true; g.add(bezel);
+
+  const waveMat = screenMat((c, w, h) => {
     c.fillStyle = '#04141a'; c.fillRect(0, 0, w, h);
+    // dual waveform (STT in / TTS out)
     c.strokeStyle = '#34e0d4'; c.lineWidth = 3; c.beginPath();
     for (let x = 0; x < w; x++) {
-      const y = h / 2 + Math.sin(x * 0.06) * 40 * Math.exp(-Math.abs(x - w / 2) / 220) + Math.sin(x * 0.21) * 14;
+      const y = h * 0.38 + Math.sin(x * 0.05) * 34 * Math.exp(-Math.abs(x - w / 2) / 240) + Math.sin(x * 0.19) * 12;
       x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
     }
     c.stroke();
-    c.fillStyle = '#6aa9ff'; c.font = '18px monospace';
-    c.fillText('STT → LLM → TTS', 20, 34);
-  }, 512, 200));
-  screen.position.set(0, 1.24, 0.16); screen.rotation.x = -0.5; g.add(screen);
-  // two small paired robots (multi-robot coordination) beside it
-  for (const dx of [-1.35, 1.35]) {
+    c.strokeStyle = '#6aa9ff'; c.lineWidth = 2.4; c.beginPath();
+    for (let x = 0; x < w; x++) {
+      const y = h * 0.72 + Math.sin(x * 0.08 + 1) * 26 * Math.exp(-Math.abs(x - w / 2) / 260);
+      x === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.stroke();
+    c.fillStyle = '#cfe6ff'; c.font = 'bold 26px monospace';
+    c.fillText('STT → LLM → TTS', 26, 46);
+    c.fillStyle = '#6aa9ff'; c.font = '16px monospace';
+    c.fillText('gemini · live', 26, 74);
+  }, 512, 272);
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.56, 0.8), waveMat);
+  screen.position.set(0, 1.72, -0.13); screen.rotation.x = -0.12; g.add(screen);
+
+  // desktop microphone (voice) on the deck
+  const micStand = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.34, 8), matSteel);
+  micStand.position.set(-0.5, 1.2, 0.22); g.add(micStand);
+  const micBase = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.04, 16), matDark);
+  micBase.position.set(-0.5, 1.05, 0.22); g.add(micBase);
+  const micHead = new THREE.Mesh(new THREE.CapsuleGeometry(0.06, 0.1, 6, 12),
+    new THREE.MeshStandardMaterial({ color: C('#1a2028'), emissive: C('#34e0d4'), emissiveIntensity: 0.5, roughness: 0.5, metalness: 0.4 }));
+  micHead.position.set(-0.5, 1.4, 0.22); g.add(micHead);
+
+  // two small paired robots (multi-robot coordination) on the floor beside the desk
+  for (const dx of [-1.25, 1.25]) {
     const bot = new THREE.Group();
     const base = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.18, 20), matWhitePlastic);
     base.position.y = 0.09; bot.add(base);
@@ -631,7 +664,7 @@ function buildIntern() {
     dome.position.y = 0.18; bot.add(dome);
     const eye = new THREE.Mesh(new THREE.CircleGeometry(0.05, 16), matAccent);
     eye.position.set(0, 0.28, 0.2); bot.add(eye);
-    bot.position.set(dx, 0, 0.2);
+    bot.position.set(dx, 0, 0.35);
     g.add(bot);
   }
   return g;

@@ -60,13 +60,12 @@ nature* argues the chapter — not just decoration:
   station rather than given its own bench, to keep that panel tight.
 - The ARTPARK work email; the contact station uses the personal email, phone,
   LinkedIn and GitHub from the résumé.
-- LinkedIn handle: the résumé text reads `shashankbr2709` (used here); the résumé's
-  header graphic shows `shashankbr27`. Worth confirming which is current and updating
-  the link in `index.html` if needed.
+- Contact links: GitHub is `github.com/shashankbr27`; LinkedIn points at
+  `linkedin.com/in/shashankbr2709` and displays the name **Shashank B R**.
 
-### Not fully satisfied with
+### Notes
 
-- **Station 2 (voice console)** is the weakest bench visually — the waveform screen
-  faces partly away from the walk path, so at a glance it reads more as a dark
-  cabinet than a console. The two companion robots carry the "swarm" idea well, but
-  the console itself could use a stronger silhouette.
+- **Station 2 (voice workstation)** was rebuilt to lead with an upright monitor
+  showing the dual STT/TTS waveform facing the walk path, with a desk mic and the
+  two paired robots for the multi-robot OpenRMF work — a stronger silhouette than
+  the original dark console.
