@@ -60,8 +60,8 @@ nature* argues the chapter — not just decoration:
   station rather than given its own bench, to keep that panel tight.
 - The ARTPARK work email; the contact station uses the personal email, phone,
   LinkedIn and GitHub from the résumé.
-- Contact links: GitHub is `github.com/shashankbr27`; LinkedIn points at
-  `linkedin.com/in/shashankbr2709` and displays the name **Shashank B R**.
+- Contact links: GitHub is `github.com/shashankbr27`; LinkedIn points at and
+  displays `linkedin.com/in/shashankbr2709`.
 
 ### Notes
 

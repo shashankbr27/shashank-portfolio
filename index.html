@@ -426,7 +426,7 @@ const STATIONS = [
       <div class="links">
         <a href="mailto:shashank1ga21is147@gmail.com"><span class="lbl">Email</span>shashank1ga21is147@gmail.com</a>
         <a href="tel:+919591939431"><span class="lbl">Phone</span>+91 959-193-9431</a>
-        <a href="https://linkedin.com/in/shashankbr2709" target="_blank" rel="noopener"><span class="lbl">LinkedIn</span>Shashank B R</a>
+        <a href="https://linkedin.com/in/shashankbr2709" target="_blank" rel="noopener"><span class="lbl">LinkedIn</span>linkedin.com/in/shashankbr2709</a>
         <a href="https://github.com/shashankbr27" target="_blank" rel="noopener"><span class="lbl">GitHub</span>github.com/shashankbr27</a>
       </div>`,
     meta: 'Bengaluru, KA · open to GenAI & Robotics work',
@@ -932,11 +932,25 @@ const U_OVERTURE = 0;
 // Scroll driver — build spacer steps (one per station + overture + tail)
 // ---------------------------------------------------------------------------
 const scrollEl = document.getElementById('scroll');
-const nSteps = STATIONS.length + 1;   // overture + each station (tail folded in)
+const nSteps = STATIONS.length + 2;   // overture holds for ~1 extra slide, then each station
 for (let i = 0; i < nSteps + 1; i++) {
   const s = document.createElement('div');
   s.className = 'step';
   scrollEl.appendChild(s);
+}
+
+// Scroll → curve-parameter remap. The overture gets a dedicated "slide": the first
+// HOLD fraction of scroll keeps the camera at the door (u ~ 0) while the overture
+// fades out, so it never overlaps the first station panel. After that the walk runs.
+const HOLD = 0.11;        // fraction of total scroll devoted to the overture
+const U_START = 0.02;     // where the walk begins in curve-space (just past the door)
+function scrollToU(p) {
+  if (p <= HOLD) return U_START * (p / HOLD);
+  return U_START + ((p - HOLD) / (1 - HOLD)) * (1 - U_START);
+}
+function overtureOpacityFor(p) {
+  // fully faded by ~70% through the hold — gone well before any station panel shows
+  return Math.max(0, 1 - p / (HOLD * 0.7));
 }
 
 // ---------------------------------------------------------------------------
@@ -984,18 +998,17 @@ let portraitLookOffset = 0;   // in portrait, aim lower so the object rides abov
 function readScroll() {
   const max = scrollEl.scrollHeight - window.innerHeight;
   const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-  // p in [0,1] over (overture + stations). Overture occupies first step.
-  // Map so overture holds for the first slice, then walk stations.
-  targetU = p;   // curve u already spans overture->trailer across [0,1]
+  targetU = scrollToU(p);
   if (!scrolled && window.scrollY > 8) {
     scrolled = true;
     hintEl.classList.add('fadeout');
     wordmarkEl.style.opacity = '1';
     progressEl.style.opacity = '1';
   }
-  // fade overture out as we leave the door
-  overtureEl.style.opacity = String(Math.max(0, 1 - p * 6));
-  if (p * 6 >= 1) overtureEl.style.pointerEvents = 'none';
+  // fade overture out during its dedicated hold slide
+  const o = overtureOpacityFor(p);
+  overtureEl.style.opacity = String(o);
+  overtureEl.style.pointerEvents = 'none';
 }
 
 window.addEventListener('scroll', readScroll, { passive: true });
@@ -1109,11 +1122,11 @@ window.scrollTo(0, 0);
 // ---------------------------------------------------------------------------
 // Debug hook
 // ---------------------------------------------------------------------------
-function debugChrome(p) {
-  // mirror the scroll-driven overture/chrome state for a given progress p
-  overtureEl.style.opacity = String(Math.max(0, 1 - p * 6));
+function debugChrome(u) {
+  // mirror the scroll-driven overture/chrome state for a given curve position u
+  const on = u > U_START * 0.5;
+  overtureEl.style.opacity = on ? '0' : '1';
   overtureEl.style.pointerEvents = 'none';
-  const on = p > 0.001;
   hintEl.classList.toggle('fadeout', on);
   wordmarkEl.style.opacity = on ? '1' : '0';
   progressEl.style.opacity = on ? '1' : '0';
