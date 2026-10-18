@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Shashank B R — GenAI & Robotics Engineer</title>
+<title>Shashank B R — AI & Robotics Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -224,17 +224,18 @@
     border-radius: 4px;
     padding: 26px 28px 28px;
     opacity: 0;
+    visibility: hidden;            /* hidden panels can't be clicked or tabbed to */
     transform: translateY(14px);
-    transition: opacity 0.55s ease, transform 0.55s ease;
+    transition: opacity 0.55s ease, transform 0.55s ease, visibility 0s linear 0.55s;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   }
-  /* Landscape: side column on the left */
+  /* Landscape: side column on the left, vertically centred whatever its height */
   .panel {
     left: 5vw;
     top: 50%;
-    margin-top: -140px;
+    transform: translateY(calc(-50% + 14px));
   }
-  .panel.visible { opacity: 1; transform: translateY(0); }
+  .panel.visible { opacity: 1; visibility: visible; transition-delay: 0s; transform: translateY(-50%); }
 
   .panel .kicker {
     font-family: var(--mono);
@@ -277,11 +278,19 @@
     color: var(--accent2);
     line-height: 1.7;
   }
-  .panel .links a {
+  .panel .links a,
+  .panel .meta a {
     color: var(--accent);
     text-decoration: none;
     border-bottom: 1px solid rgba(52, 224, 212, 0.4);
     pointer-events: auto;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .panel .meta a:hover,
+  .panel .meta a:focus-visible {
+    color: var(--bio);
+    border-bottom-color: var(--bio);
+    outline: none;
   }
   .panel.contact .links {
     display: flex;
@@ -306,6 +315,55 @@
     font-size: 10px;
     letter-spacing: 0.18em;
   }
+
+  /* Closing "Thank you!" + restart button (last station only) */
+  .panel .thanks {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(143, 166, 182, 0.18);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .panel .thanks .thanks-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(26px, 3.4vw, 36px);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    background: linear-gradient(100deg, var(--bio), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .panel .restart {
+    pointer-events: auto;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 18px;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    background: rgba(51, 230, 176, 0.08);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .panel .restart:hover,
+  .panel .restart:focus-visible {
+    background: var(--accent);
+    color: #04100d;
+    box-shadow: 0 0 22px rgba(51, 230, 176, 0.55);
+    transform: translateY(-1px);
+    outline: none;
+  }
+  .panel .restart .up { font-size: 14px; line-height: 1; }
 
   /* ---------- Portrait: card across lower third ---------- */
   @media (orientation: portrait), (max-width: 720px) {
@@ -342,9 +400,9 @@
   <div id="overture">
     <div class="kicker">Autonomous Systems Lab — Bengaluru</div>
     <h1>Shashank<br>B R</h1>
-    <div class="role">GenAI &amp; Robotics Engineer · Perception · Agentic AI</div>
-    <p class="hook">I ship end-to-end, sensor-to-UI: LLM planning layers that turn natural language into schema-validated robot actions, perception stacks that run in real time, and the web and mobile layers around them. Walk the lab — every bench is one thing I've built.</p>
-    <div class="tease">Next — machine consciousness, beyond neural networks</div>
+    <div class="role">AI &amp; Robotics Engineer · Vision-Language Systems · Robot Autonomy</div>
+    <p class="hook">I build vision-language perception and language-to-action systems for autonomous robots — VLMs, object grounding, ROS 2 / Nav2, SLAM, LiDAR and depth sensing — and validate them in simulation and on real robots. Walk the lab — every bench is one thing I've built.</p>
+    <div class="tease">Next — reliable Physical AI, beyond neural networks</div>
   </div>
 
   <div id="panels"></div>
@@ -389,7 +447,7 @@ const STATIONS = [
     title: 'Where the schematics started',
     html: `
       <p><strong>B.E., Information Science &amp; Engineering</strong> at Global Academy of Technology — the drafting table where the fundamentals were laid down.</p>
-      <p>CGPA <strong>7.81 / 10.0</strong>. Coursework in Data Structures, Algorithms, Operating Systems, Computer Networks, Object-Oriented Programming (Java) and Big Data Analytics.</p>`,
+      <p>CGPA <strong>7.81 / 10.0</strong>.</p>`,
     meta: 'B.E. ISE · Global Academy of Technology · Dec 2021 – Jun 2025',
   },
   {
@@ -397,8 +455,8 @@ const STATIONS = [
     kicker: 'ARTPARK · Internship',
     title: 'The voice console and the first swarm',
     html: `
-      <p>Shipped a full-stack <strong>real-time speech-to-speech assistant</strong> — STT → LLM reasoning → TTS on the Gemini API — from conversational prototype to a production voice-interaction pipeline.</p>
-      <p>Designed an <strong>MCP-based OpenRMF architecture</strong> for multi-robot coordination with an embedded AI agent, integrating ROS2, Nav2 and SLAM with LiDAR and Intel RealSense depth on the Rigbetel Diadem platform.</p>`,
+      <p>Built a <strong>real-time speech-to-speech assistant</strong> — speech recognition → LLM reasoning → speech synthesis — taking a language-driven interaction pipeline from prototype to production.</p>
+      <p>Designed an <strong>MCP-based AI-agent architecture</strong> for multi-robot coordination, and integrated <strong>ROS 2, Nav2 and SLAM</strong> with LiDAR and Intel RealSense depth sensing on the Rigbetel Diadem mobile robot.</p>`,
     meta: 'AI & Robotics Intern · ARTPARK, IISc · Apr – Jun 2025',
   },
   {
@@ -406,8 +464,8 @@ const STATIONS = [
     kicker: 'ARTPARK · Associate Engineer',
     title: 'Calibrating the world before the robot moves',
     html: `
-      <p>Validated navigation-stack <strong>pose and coordinate-transform accuracy</strong> pre-deployment, reconstructing dense 3D scene maps from multi-view imagery with <strong>COLMAP</strong>.</p>
-      <p>Ran <strong>Isaac Sim</strong> navigation trials across simulated environments to catch localization errors before real-world robot bring-up.</p>`,
+      <p>Validated navigation <strong>pose estimates and coordinate transforms</strong> before deployment, and reconstructed dense 3D scene maps from multi-view imagery with <strong>COLMAP</strong>.</p>
+      <p>Ran <strong>Isaac Sim</strong> trials to identify localization issues before robot bring-up.</p>`,
     meta: 'Associate Engineer, GenAI & Robotics · ARTPARK, IISc · Jul 2025 – Present',
   },
   {
@@ -415,46 +473,55 @@ const STATIONS = [
     kicker: 'ARTPARK · Vision Analytics',
     title: 'Choosing the model, then making it fast',
     html: `
-      <p>Benchmarked LLMs and VLMs — <strong>Cosmos-Reason1, Cosmos-Predict1, LLaVA, Qwen-VL</strong> — to drive the production perception-model choice for a live vision-analytics platform.</p>
-      <p>Replaced the NVIDIA Cosmos stack with a lighter <strong>LLaVA / Qwen-VL pipeline fused with SAM2 and Grounding DINO v2</strong>, cutting GPU overhead and improving spatial grounding.</p>
-      <p>Cut chatbot end-to-end latency <strong>30%</strong> via parallelized gRPC LLM request handling, and built the platform's <strong>Flutter</strong> Android app.</p>`,
-    meta: 'Associate Engineer · ARTPARK, IISc · 2025 – Present',
+      <p>Replaced the NVIDIA Cosmos perception stack with a lighter <strong>LLaVA / Qwen-VL pipeline integrated with SAM2 and Grounding DINO v2</strong> — less GPU overhead, better spatial grounding for real-time object detection.</p>
+      <p>Cut end-to-end chatbot latency <strong>30%</strong> through parallelized gRPC integration and retrieval improvements, extended query coverage across the vision-analytics stack, and refactored and tested the codebase for reliability.</p>`,
+    meta: 'Associate Engineer · ARTPARK, IISc · Jul 2025 – Present',
+  },
+  {
+    id: 'thili',
+    kicker: 'ARTPARK · Thili',
+    title: 'Thili — one watch across every camera',
+    html: `
+      <p>Contributed <strong>object-detection and action-recognition modules</strong> to Thili, a smart AI-based security-surveillance and real-time video-analytics platform.</p>
+      <p>Worked on <strong>cross-camera trajectory tracking</strong> and developed a <strong>Flutter Android application</strong>.</p>`,
+    meta: 'Thili · Associate Engineer · ARTPARK, IISc · Jul 2025 – Present',
+  },
+  {
+    id: 'fusion',
+    kicker: 'ARTPARK · Research',
+    title: 'Radar, sound and heat — one fused picture',
+    html: `
+      <p>Researched <strong>multi-modal sensor fusion and analytics</strong> for infiltration detection along the LoC.</p>
+      <p>Sensors studied: <strong>Radar</strong> (ARD 548 RDI), an <strong>acoustic array</strong> (microDSP UMA-16) and a <strong>thermal imager</strong> (LWIR).</p>`,
+    meta: 'Sensor fusion research · ARTPARK, IISc · Radar + Acoustic + LWIR',
   },
   {
     id: 'nayantra',
     kicker: 'Project · Open Source',
-    title: 'Nayantra — the robot that replans itself',
+    title: 'Nayantra — from a sentence to a fleet',
     html: `
-      <p>Architected a closed-loop <strong>plan-act-observe agentic system</strong>: an LLM planning layer resolves natural-language goals into <strong>schema-validated MCP tool calls</strong> dispatched to ROS2 Nav2.</p>
-      <p>It monitors execution in real time and <strong>autonomously replans on failure</strong> — running on physical hardware, not just in sim.</p>`,
-    meta: 'Nayantra · github.com/shashankbr27/nayantra · Mar 2026 – Present',
-  },
-  {
-    id: 'amar',
-    kicker: 'Project',
-    title: 'AMAR — a reasoning core that remembers',
-    html: `
-      <p>Built a full-stack agentic platform with <strong>multi-provider LLM routing, persistent memory, async job execution and recursive reasoning loops</strong>.</p>
-      <p>Raised task-confidence from <strong>68% to 90%+</strong> across 500 benchmarks, at <strong>99.2% uptime over 60 days</strong>.</p>`,
-    meta: 'AMAR — Autonomous Memory Agentic Reasoning · Nov 2025 – Present',
+      <p>An <strong>agentic operations platform for heterogeneous robot fleets</strong>: an open-source language-to-action system that turns natural-language goals into <strong>schema-validated tool calls</strong>, dispatches navigation through <strong>ROS 2 / Nav2</strong>, monitors execution and <strong>replans on failure</strong>.</p>
+      <p>Evolved toward multi-fleet orchestration — a <strong>shared world model, task allocation, traffic coordination, safety constraints</strong> and robot-adapter interfaces.</p>`,
+    meta: 'Nayantra · <a href="https://github.com/shashankbr27/nayantra" target="_blank" rel="noopener">github.com/shashankbr27/nayantra</a> · Mar 2026 – Present',
   },
   {
     id: 'cosmic',
     kicker: 'Project',
     title: 'Cosmic Eyes — seeing one step ahead',
     html: `
-      <p>Built a real-time <strong>scene-understanding and short-horizon prediction</strong> pipeline on <strong>Cosmos-Reason1 and Cosmos-Predict1</strong> — the perception rig that reads a scene and forecasts what happens next.</p>`,
-    meta: 'Cosmic Eyes — NVIDIA Cosmos Perception Stack · Apr – Jun 2025',
+      <p>Built a real-time <strong>scene-understanding and short-horizon action-prediction</strong> pipeline using <strong>NVIDIA Cosmos Reason and Cosmos Predict</strong> — the perception rig that reads a scene and forecasts what happens next.</p>`,
+    meta: 'Cosmic Eyes — Vision-Language Scene Understanding · Apr – Jun 2025',
   },
   {
     id: 'skills',
     kicker: 'The instrument wall',
     title: 'Everything wired to the bench',
     html: `
-      <p><strong>Robotics &amp; Motion:</strong> ROS2, Nav2, SLAM, AMCL, tf2 pose estimation, OpenRMF, Isaac Sim, Gazebo, RViz.</p>
-      <p><strong>Agentic AI &amp; LLMs:</strong> MCP tool orchestration, structured tool-calling, RAG, fine-tuning, multi-provider routing (OpenAI, Gemini, Groq, Claude).</p>
-      <p><strong>Vision &amp; Stack:</strong> RT-DETR, YOLO, SAM2, Qwen-VL, LLaVA · React/FastAPI, gRPC, WebSockets, Flutter · Python, C++, Java, Docker, Linux.</p>`,
-    meta: 'Selected tooling across robotics, agentic AI, perception and full-stack',
+      <p><strong>Robotics &amp; Autonomy:</strong> ROS 2, Nav2, SLAM, AMCL, OpenRMF, motion planning, LiDAR, Intel RealSense, Gazebo, RViz, Isaac Sim.</p>
+      <p><strong>Vision-Language &amp; Perception:</strong> NVIDIA Cosmos Reason/Predict, LLaVA, Qwen-VL, RT-DETR, SAM, Grounding DINO, object detection, action recognition, scene/sensor fusion.</p>
+      <p><strong>AI Systems:</strong> structured tool calling, agentic orchestration, RAG, multi-provider LLM routing, fine-tuning, MCP.</p>
+      <p><strong>Languages &amp; Stack:</strong> Python, C++, C, Java · Transformers, OpenCV, FastAPI, MERN, Flutter, gRPC, REST, WebSockets · MySQL, MongoDB, PostgreSQL · Git, Docker, Linux.</p>`,
+    meta: 'Selected tooling across robotics, vision-language perception and AI systems',
   },
   {
     id: 'contact',
@@ -462,14 +529,18 @@ const STATIONS = [
     title: "Let's build the next one",
     contact: true,
     html: `
-      <p>Now researching machine consciousness for robots — perception, memory and agency that reach past conventional neural networks. If that's your world too, say hello.</p>
+      <p>Interested in developing reliable Physical AI for complex mobile machinery and real-world industrial environments — beyond neural networks. If that's your world too, say hello.</p>
       <div class="links">
         <a href="mailto:shashank1ga21is147@gmail.com"><span class="lbl">Email</span>shashank1ga21is147@gmail.com</a>
         <a href="tel:+919591939431"><span class="lbl">Phone</span>+91 959-193-9431</a>
         <a href="https://linkedin.com/in/shashankbr2709" target="_blank" rel="noopener"><span class="lbl">LinkedIn</span>linkedin.com/in/shashankbr2709</a>
         <a href="https://github.com/shashankbr27" target="_blank" rel="noopener"><span class="lbl">GitHub</span>github.com/shashankbr27</a>
+      </div>
+      <div class="thanks">
+        <div class="thanks-title">Thank you!</div>
+        <button class="restart" type="button" data-restart><span class="up" aria-hidden="true">↑</span>Go to start</button>
       </div>`,
-    meta: 'Bengaluru, KA · open to GenAI & Robotics work',
+    meta: 'Bengaluru, India · open to AI & Robotics work',
   },
 ];
 
@@ -693,7 +764,7 @@ function buildIntern() {
     c.fillStyle = '#cfe6ff'; c.font = 'bold 26px monospace';
     c.fillText('STT → LLM → TTS', 26, 46);
     c.fillStyle = '#b58cff'; c.font = '16px monospace';
-    c.fillText('gemini · live', 26, 74);
+    c.fillText('speech-to-speech · live', 26, 74);
   }, 512, 272);
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.56, 0.8), waveMat);
   screen.position.set(0, 1.72, -0.13); screen.rotation.x = -0.12; g.add(screen);
@@ -787,7 +858,7 @@ function buildStack() {
   return g;
 }
 
-// 4. NAYANTRA — autonomous mobile rover with spinning LiDAR, on a floor map
+// 6. NAYANTRA — autonomous mobile rover with spinning LiDAR, on a floor map
 function buildNayantra() {
   const g = new THREE.Group();
   // floor nav map decal
@@ -827,33 +898,156 @@ function buildNayantra() {
   return g;
 }
 
-// 5. AMAR — glowing memory/reasoning core (obelisk with rings of light)
-function buildAmar() {
+// 4. THILI — surveillance video wall: four camera feeds with detection boxes and one
+//    track hopping between them (cross-camera tracking), plus a panning dome camera
+function buildThili() {
   const g = new THREE.Group();
-  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.85, 0.3, 6), matDark);
-  base.position.y = 0.15; base.castShadow = true; g.add(base);
-  const core = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 2.6, 6),
-    new THREE.MeshStandardMaterial({ color: C('#0a1620'), roughness: 0.35, metalness: 0.7 }));
-  core.position.y = 1.6; core.castShadow = true; g.add(core);
-  // rings of light stacked (memory layers)
-  const rings = new THREE.Group();
-  for (let i = 0; i < 7; i++) {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.035, 8, 32),
-      new THREE.MeshStandardMaterial({ color: C('#08201f'), emissive: i % 2 ? C('#b58cff') : C('#33e6b0'), emissiveIntensity: 1.3, roughness: 0.4 }));
-    ring.rotation.x = Math.PI / 2;
-    ring.position.y = 0.6 + i * 0.34;
-    rings.add(ring);
-  }
-  g.add(rings);
-  g.userData.rings = rings;
-  // top emitter
-  const top = new THREE.Mesh(new THREE.OctahedronGeometry(0.28), matAccent);
-  top.position.y = 3.1; g.add(top);
-  g.userData.top = top;
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(3.0, 1.9, 0.12), matDark);
+  frame.position.y = 1.75; frame.castShadow = true; g.add(frame);
+  const stand = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.85, 0.2), matSteel);
+  stand.position.set(0, 0.425, -0.05); g.add(stand);
+  const foot = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.06, 0.8), matDark);
+  foot.position.set(0, 0.03, -0.05); g.add(foot);
+
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(2.84, 1.74), screenMat((c, w, h) => {
+    c.fillStyle = '#02080b'; c.fillRect(0, 0, w, h);
+    const cw = w / 2, ch = h / 2;
+    // [feed bg, person x, person y] per camera (fractions of the feed cell)
+    const feeds = [['#0b2229', 0.30, 0.62], ['#0a1c22', 0.64, 0.55], ['#0a1c22', 0.36, 0.60], ['#0b2229', 0.70, 0.58]];
+    feeds.forEach(([bg, px, py], k) => {
+      const x0 = (k % 2) * cw, y0 = Math.floor(k / 2) * ch;
+      c.fillStyle = bg; c.fillRect(x0 + 4, y0 + 4, cw - 8, ch - 8);
+      c.strokeStyle = 'rgba(120,200,210,0.07)'; c.lineWidth = 1;
+      for (let y = y0 + 8; y < y0 + ch - 4; y += 6) { c.beginPath(); c.moveTo(x0 + 4, y); c.lineTo(x0 + cw - 4, y); c.stroke(); }
+      // simple figure
+      const fx = x0 + cw * px, fy = y0 + ch * py;
+      c.fillStyle = 'rgba(190,225,235,0.55)';
+      c.beginPath(); c.arc(fx, fy - 40, 9, 0, Math.PI * 2); c.fill();
+      c.fillRect(fx - 11, fy - 29, 22, 46);
+      // detection box + label
+      c.strokeStyle = '#33e6b0'; c.lineWidth = 2.5; c.strokeRect(fx - 24, fy - 56, 48, 82);
+      c.fillStyle = '#33e6b0'; c.fillRect(fx - 24, fy - 72, 76, 16);
+      c.fillStyle = '#04141a'; c.font = 'bold 12px monospace'; c.fillText('ID 07 walk', fx - 20, fy - 60);
+      c.fillStyle = '#33e6b0'; c.font = '14px monospace'; c.fillText('CAM 0' + (k + 1), x0 + 14, y0 + 26);
+    });
+    // the same person traced from camera to camera
+    c.strokeStyle = '#b58cff'; c.lineWidth = 4; c.setLineDash([10, 7]);
+    c.beginPath();
+    c.moveTo(cw * 0.30, ch * 0.62); c.lineTo(cw * 0.95, ch * 0.5);
+    c.lineTo(cw * 1.64, ch * 0.55); c.lineTo(cw * 1.9, ch * 1.2);
+    c.lineTo(cw * 1.7, ch * 1.58); c.lineTo(cw * 0.36, ch * 1.60);
+    c.stroke(); c.setLineDash([]);
+    // grid separators
+    c.fillStyle = '#02080b'; c.fillRect(cw - 2, 0, 4, h); c.fillRect(0, ch - 2, w, 4);
+  }, 768, 480));
+  wall.position.set(0, 1.75, 0.065); g.add(wall);
+
+  // dome camera on a post, panning
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 2.5, 10), matSteel);
+  post.position.set(1.95, 1.25, 0.1); g.add(post);
+  const dome = new THREE.Group();
+  dome.position.set(1.95, 2.55, 0.1);
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.08, 18), matWhitePlastic);
+  dome.add(cap);
+  const shell = new THREE.Mesh(new THREE.SphereGeometry(0.17, 18, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), matWhitePlastic);
+  shell.position.y = -0.04; dome.add(shell);
+  const lens = new THREE.Mesh(new THREE.CircleGeometry(0.055, 16), matAccent);
+  lens.position.set(0, -0.12, 0.13); lens.rotation.x = 0.35; dome.add(lens);
+  g.add(dome);
+  g.userData.head = dome;
   return g;
 }
 
-// 6. COSMIC EYES — pan-tilt camera head with lens cluster on a stand
+// 5. SENSOR FUSION — bench with a radar panel, a 4x4 acoustic array and an LWIR thermal
+//    imager in front of a display that overlays all three (radar plot + thermal + bearing)
+function buildFusion() {
+  const g = new THREE.Group();
+  const bench = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.75, 1.0), matDark);
+  bench.position.y = 0.375; bench.castShadow = true; g.add(bench);
+  const texMat = (draw, w, h) => new THREE.MeshStandardMaterial({ map: makeScreenTexture(draw, w, h), roughness: 0.55, metalness: 0.2 });
+
+  // fused display behind the sensors
+  const bezel = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.3, 0.08), matDark);
+  bezel.position.set(0, 1.75, -0.3); bezel.castShadow = true; g.add(bezel);
+  const display = new THREE.Mesh(new THREE.PlaneGeometry(2.38, 1.18), screenMat((c, w, h) => {
+    c.fillStyle = '#04141a'; c.fillRect(0, 0, w, h);
+    // radar polar plot
+    const rx = 170, ry = 190, rr = 130;
+    c.strokeStyle = 'rgba(51,230,176,0.35)'; c.lineWidth = 1.5;
+    for (let k = 1; k <= 4; k++) { c.beginPath(); c.arc(rx, ry, rr * k / 4, 0, Math.PI * 2); c.stroke(); }
+    c.beginPath(); c.moveTo(rx - rr, ry); c.lineTo(rx + rr, ry); c.moveTo(rx, ry - rr); c.lineTo(rx, ry + rr); c.stroke();
+    c.fillStyle = 'rgba(181,140,255,0.28)';
+    c.beginPath(); c.moveTo(rx, ry); c.arc(rx, ry, rr, -1.2, -0.5); c.closePath(); c.fill();
+    c.fillStyle = '#33e6b0';
+    for (const [dx, dy] of [[40, -30], [-60, 20], [70, 55], [-30, -70]]) { c.beginPath(); c.arc(rx + dx, ry + dy, 3, 0, Math.PI * 2); c.fill(); }
+    c.fillStyle = '#ff6b6b'; c.beginPath(); c.arc(rx + 68, ry - 58, 6, 0, Math.PI * 2); c.fill();
+    // thermal (LWIR) pane
+    const tx = 350, ty = 60, tw = 270, th = 170;
+    const heat = c.createLinearGradient(tx, ty, tx, ty + th);
+    heat.addColorStop(0, '#1a0b3a'); heat.addColorStop(1, '#3a1450');
+    c.fillStyle = heat; c.fillRect(tx, ty, tw, th);
+    const blob = c.createRadialGradient(tx + 170, ty + 85, 2, tx + 170, ty + 85, 60);
+    blob.addColorStop(0, '#fff3a0'); blob.addColorStop(0.35, '#ff9a2e'); blob.addColorStop(1, 'rgba(120,20,90,0)');
+    c.fillStyle = blob; c.fillRect(tx, ty, tw, th);
+    c.strokeStyle = '#33e6b0'; c.lineWidth = 2.5; c.strokeRect(tx + 135, ty + 45, 70, 80);
+    // acoustic bearing trace
+    c.strokeStyle = '#b58cff'; c.lineWidth = 2.5; c.beginPath();
+    for (let x = 0; x < 270; x++) {
+      const y = 296 + Math.sin(x * 0.11) * 12 * Math.exp(-Math.abs(x - 170) / 70) + Math.sin(x * 0.4) * 3;
+      x === 0 ? c.moveTo(350 + x, y) : c.lineTo(350 + x, y);
+    }
+    c.stroke();
+    c.fillStyle = '#cfe6ff'; c.font = '15px monospace';
+    c.fillText('RADAR', 120, 350); c.fillText('LWIR', 450, 50); c.fillText('ACOUSTIC', 350, 332);
+    c.fillStyle = '#33e6b0'; c.font = 'bold 16px monospace'; c.fillText('FUSED TRACK 01', 24, 36);
+  }, 640, 340));
+  display.position.set(0, 1.75, -0.255); g.add(display);
+
+  // radar panel (patch-antenna grid) on a post
+  const radarPost = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 8), matSteel);
+  radarPost.position.set(-0.95, 0.9, 0.2); g.add(radarPost);
+  const radar = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.45, 0.08), matWhitePlastic);
+  radar.position.set(-0.95, 1.2, 0.2); radar.castShadow = true; g.add(radar);
+  const patch = new THREE.Mesh(new THREE.PlaneGeometry(0.52, 0.37), texMat((c, w, h) => {
+    c.fillStyle = '#0b1a1e'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#2d8f84';
+    for (let i = 0; i < 8; i++) for (let j = 0; j < 6; j++) c.fillRect(14 + i * 29, 12 + j * 29, 20, 20);
+  }, 256, 192));
+  patch.position.set(-0.95, 1.2, 0.245); g.add(patch);
+
+  // acoustic array — square board, 4x4 microphones + centre camera
+  const arrPost = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.3, 8), matSteel);
+  arrPost.position.set(0, 0.9, 0.25); g.add(arrPost);
+  const board = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.04), matDark);
+  board.position.set(0, 1.2, 0.25); board.castShadow = true; g.add(board);
+  const mics = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.46), texMat((c, w, h) => {
+    c.fillStyle = '#0a1216'; c.fillRect(0, 0, w, h);
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+      const x = 32 + i * 64, y = 32 + j * 64;
+      c.fillStyle = '#05080a'; c.beginPath(); c.arc(x, y, 14, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = '#33e6b0'; c.lineWidth = 2; c.stroke();
+    }
+    c.fillStyle = '#b58cff'; c.beginPath(); c.arc(128, 128, 7, 0, Math.PI * 2); c.fill();
+  }, 256, 256));
+  mics.position.set(0, 1.2, 0.272); g.add(mics);
+
+  // LWIR thermal imager
+  const thermal = new THREE.Group();
+  thermal.position.set(0.95, 1.0, 0.2);
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.26, 0.4), matWhitePlastic);
+  body.castShadow = true; thermal.add(body);
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.16, 20), matDark);
+  barrel.rotation.x = Math.PI / 2; barrel.position.z = 0.27; thermal.add(barrel);
+  const glass = new THREE.Mesh(new THREE.CircleGeometry(0.085, 20),
+    new THREE.MeshStandardMaterial({ color: C('#20163d'), emissive: C('#b58cff'), emissiveIntensity: 0.8, roughness: 0.15, metalness: 0.6 }));
+  glass.position.z = 0.356; thermal.add(glass);
+  g.add(thermal);
+  const thermalFoot = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.12, 12), matSteel);
+  thermalFoot.position.set(0.95, 0.81, 0.2); g.add(thermalFoot);
+  return g;
+}
+
+// 7. COSMIC EYES — pan-tilt camera head with lens cluster on a stand
 function buildCosmic() {
   const g = new THREE.Group();
   const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.14, 1.4, 12), matSteel);
@@ -877,7 +1071,7 @@ function buildCosmic() {
   return g;
 }
 
-// 7. SKILLS — instrument wall: grid of emissive tiles/gauges on a panel
+// 8. SKILLS — instrument wall: grid of emissive tiles/gauges on a panel
 function buildSkills() {
   const g = new THREE.Group();
   const panel = new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.2, 0.15), matDark);
@@ -898,7 +1092,7 @@ function buildSkills() {
   return g;
 }
 
-// 8. CONTACT — exit access terminal (kiosk with screen) + lit doorway
+// 9. CONTACT — exit access terminal (kiosk with screen) + lit doorway
 function buildContact() {
   const g = new THREE.Group();
   // lit doorway on the back
@@ -922,7 +1116,8 @@ function buildContact() {
   return g;
 }
 
-const BUILDERS = [buildEducation, buildIntern, buildPerception, buildStack, buildNayantra, buildAmar, buildCosmic, buildSkills, buildContact];
+// same order as STATIONS
+const BUILDERS = [buildEducation, buildIntern, buildPerception, buildStack, buildThili, buildFusion, buildNayantra, buildCosmic, buildSkills, buildContact];
 
 // ---------------------------------------------------------------------------
 // Place objects + per-station key lights; build camera waypoints
@@ -944,7 +1139,7 @@ STATIONS.forEach((st, i) => {
   grp.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;   // face the walkway
   scene.add(grp);
   st._group = grp;
-  if (grp.userData.rover || grp.userData.rings || grp.userData.head) animated.push(grp);
+  if (grp.userData.rover || grp.userData.head) animated.push(grp);
 
   // key light for the object (kept few + modest to protect fill-rate)
   if (!isMobile || i % 2 === 0) {
@@ -1079,6 +1274,13 @@ function readScroll() {
     hintEl.classList.add('fadeout');
     wordmarkEl.style.opacity = '1';
     progressEl.style.opacity = '1';
+  } else if (scrolled && window.scrollY <= 8) {
+    // back at the door (e.g. via "Go to start"): re-arm the intro chrome
+    scrolled = false;
+    hintEl.classList.remove('fadeout');
+    hintEl.style.opacity = '1';
+    wordmarkEl.style.opacity = '0';
+    progressEl.style.opacity = '0';
   }
   // fade overture out during its dedicated hold slide
   const o = overtureOpacityFor(p);
@@ -1087,6 +1289,13 @@ function readScroll() {
 }
 
 window.addEventListener('scroll', readScroll, { passive: true });
+
+// "Go to start" button (last station): fly back to the door
+panelsEl.addEventListener('click', (e) => {
+  if (!e.target.closest('[data-restart]')) return;
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+});
 
 // touch look
 window.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
@@ -1112,7 +1321,10 @@ function updatePanels(u) {
     if (d < bestD) { bestD = d; best = i; }
   });
   // only show a panel when reasonably near a station AND past the overture
-  const near = bestD < (0.5 / (nPts - 1)) * 1.15;
+  // the closing panel (thank-you + restart) stays up for the rest of the scroll
+  const last = STATIONS.length - 1;
+  const pastLast = best === last && u >= uForStation(last);
+  const near = bestD < (0.5 / (nPts - 1)) * 1.15 || pastLast;
   const show = near && u > uForStation(0) - (0.6 / (nPts - 1));
   if (best !== activeStation) {
     if (activeStation >= 0) panelEls[activeStation].classList.remove('visible');
@@ -1152,7 +1364,6 @@ function tick() {
   // animated objects
   for (const g of animated) {
     if (g.userData.rover) g.userData.rover.userData.lidar.rotation.y += 0.05;
-    if (g.userData.rings) { g.userData.rings.rotation.y += 0.004; g.userData.top.rotation.y += 0.02; g.userData.top.rotation.x += 0.01; }
     if (g.userData.head) g.userData.head.rotation.y = Math.sin(frame * 0.01) * 0.4;
   }
 
