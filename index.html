@@ -236,6 +236,10 @@
     transform: translateY(calc(-50% + 14px));
   }
   .panel.visible { opacity: 1; visibility: visible; transition-delay: 0s; transform: translateY(-50%); }
+  /* Benches on the right wall appear on the left of the screen: put their panel on the right so it never covers them */
+  @media (orientation: landscape) and (min-width: 721px) {
+    .panel.right { left: auto; right: 5vw; }
+  }
 
   .panel .kicker {
     font-family: var(--mono);
@@ -400,8 +404,8 @@
   <div id="overture">
     <div class="kicker">Autonomous Systems Lab — Bengaluru</div>
     <h1>Shashank<br>B R</h1>
-    <div class="role">AI &amp; Robotics Engineer · Vision-Language Systems · Robot Autonomy</div>
-    <p class="hook">I build vision-language perception and language-to-action systems for autonomous robots — VLMs, object grounding, ROS 2 / Nav2, SLAM, LiDAR and depth sensing — and validate them in simulation and on real robots. Walk the lab — every bench is one thing I've built.</p>
+    <div class="role">AI &amp; Robotics Engineer · Vision Language Models · Physical AI</div>
+    <p class="hook">I build vision-language perception and language-to-action systems for autonomous robots — from VLM object grounding to ROS 2 / Nav2 execution, fusing LiDAR, depth, radar, acoustic and thermal sensing, and validating in simulation before real-robot bring-up. Walk the lab — every bench is one thing I've built.</p>
     <div class="tease">Next — reliable Physical AI, beyond neural networks</div>
   </div>
 
@@ -455,8 +459,8 @@ const STATIONS = [
     kicker: 'ARTPARK · Internship',
     title: 'The voice console and the first swarm',
     html: `
-      <p>Built a <strong>real-time speech-to-speech assistant</strong> — speech recognition → LLM reasoning → speech synthesis — taking a language-driven interaction pipeline from prototype to production.</p>
-      <p>Designed an <strong>MCP-based AI-agent architecture</strong> for multi-robot coordination, and integrated <strong>ROS 2, Nav2 and SLAM</strong> with LiDAR and Intel RealSense depth sensing on the Rigbetel Diadem mobile robot.</p>`,
+      <p>Integrated <strong>ROS 2, Nav2 and SLAM</strong> with LiDAR and Intel RealSense depth sensing on the Rigbetel Diadem mobile robot, contributing to the navigation and perception stack of a mobile robotics platform.</p>
+      <p>Designed an <strong>MCP-based AI-agent architecture</strong> for multi-robot coordination, and built a <strong>real-time speech-to-speech assistant</strong> — speech recognition → LLM reasoning → speech synthesis — from prototype to production.</p>`,
     meta: 'AI & Robotics Intern · ARTPARK, IISc · Apr – Jun 2025',
   },
   {
@@ -478,12 +482,21 @@ const STATIONS = [
     meta: 'Associate Engineer · ARTPARK, IISc · Jul 2025 – Present',
   },
   {
+    id: 'husky',
+    kicker: 'ARTPARK · VLA Navigation',
+    title: 'Husky — eyes in the sky, actions on the ground',
+    html: `
+      <p>Developed an <strong>OmniVLA-based navigation pipeline</strong> for a Husky UGV, using <strong>drone and satellite views</strong> (BEV) to identify people in restricted zones and inform navigation decisions.</p>
+      <p>The model translates visual context into <strong>structured navigation actions</strong>, evaluated on target identification, action correctness and goal-reaching performance.</p>`,
+    meta: 'Husky UGV · VLA navigation · ARTPARK, IISc · Jul 2025 – Present',
+  },
+  {
     id: 'thili',
     kicker: 'ARTPARK · Thili',
     title: 'Thili — one watch across every camera',
     html: `
-      <p>Contributed <strong>object-detection and action-recognition modules</strong> to Thili, a smart AI-based security-surveillance and real-time video-analytics platform.</p>
-      <p>Worked on <strong>cross-camera trajectory tracking</strong> and developed a <strong>Flutter Android application</strong>.</p>`,
+      <p>Contributed <strong>object-detection and action-recognition modules</strong> to Thili, a smart AI-powered security-surveillance and real-time video-analytics platform.</p>
+      <p>Worked on <strong>cross-camera trajectory tracking</strong> and developed a <strong>Flutter Android application</strong> for Thili.</p>`,
     meta: 'Thili · Associate Engineer · ARTPARK, IISc · Jul 2025 – Present',
   },
   {
@@ -491,8 +504,8 @@ const STATIONS = [
     kicker: 'ARTPARK · Research',
     title: 'Radar, sound and heat — one fused picture',
     html: `
-      <p>Researched <strong>multi-modal sensor fusion and analytics</strong> for infiltration detection along the LoC.</p>
-      <p>Sensors studied: <strong>Radar</strong> (ARD 548 RDI), an <strong>acoustic array</strong> (microDSP UMA-16) and a <strong>thermal imager</strong> (LWIR).</p>`,
+      <p>Researched <strong>multimodal sensor fusion and analytics</strong> for infiltration detection along the LoC.</p>
+      <p>Sensors studied: <strong>Radar</strong> (ARD 548 RDI), an <strong>acoustic array</strong> (microDSP) and a <strong>thermal imager</strong> (LWIR).</p>`,
     meta: 'Sensor fusion research · ARTPARK, IISc · Radar + Acoustic + LWIR',
   },
   {
@@ -517,11 +530,11 @@ const STATIONS = [
     kicker: 'The instrument wall',
     title: 'Everything wired to the bench',
     html: `
-      <p><strong>Robotics &amp; Autonomy:</strong> ROS 2, Nav2, SLAM, AMCL, OpenRMF, motion planning, LiDAR, Intel RealSense, Gazebo, RViz, Isaac Sim.</p>
-      <p><strong>Vision-Language &amp; Perception:</strong> NVIDIA Cosmos Reason/Predict, LLaVA, Qwen-VL, RT-DETR, SAM, Grounding DINO, object detection, action recognition, scene/sensor fusion.</p>
-      <p><strong>AI Systems:</strong> structured tool calling, agentic orchestration, RAG, multi-provider LLM routing, fine-tuning, MCP.</p>
-      <p><strong>Languages &amp; Stack:</strong> Python, C++, C, Java · Transformers, OpenCV, FastAPI, MERN, Flutter, gRPC, REST, WebSockets · MySQL, MongoDB, PostgreSQL · Git, Docker, Linux.</p>`,
-    meta: 'Selected tooling across robotics, vision-language perception and AI systems',
+      <p><strong>VLM, VLA &amp; Perception:</strong> VLA training, OpenVLA, RT-2, LLaVA, Qwen-VL, OmniVLA, NVIDIA Cosmos Reason/Predict, SAM, SAM2, Grounding DINO, RT-DETR, BEV, OpenCV, Transformers, COLMAP.</p>
+      <p><strong>Robotics &amp; Autonomy:</strong> ROS 2, Nav2, SLAM, AMCL, OpenRMF, motion planning, sensor fusion, LiDAR, Intel RealSense, Gazebo, RViz, Isaac Sim.</p>
+      <p><strong>AI Systems:</strong> structured tool calling, agentic orchestration, MCP, RAG, multi-provider LLM routing, fine-tuning.</p>
+      <p><strong>Languages &amp; Stack:</strong> Python, C++, C, Java · FastAPI, gRPC, REST, WebSockets, Flutter, MERN · Git, GitHub, Docker, Linux · MySQL, MongoDB, PostgreSQL.</p>`,
+    meta: 'Selected tooling across VLM/VLA, robotics autonomy and AI systems',
   },
   {
     id: 'contact',
@@ -529,10 +542,10 @@ const STATIONS = [
     title: "Let's build the next one",
     contact: true,
     html: `
-      <p>Interested in developing reliable Physical AI for complex mobile machinery and real-world industrial environments — beyond neural networks. If that's your world too, say hello.</p>
+      <p>Keen to build reliable Physical AI for heavy mobile machinery working in real industrial environments — beyond neural networks. If that's your world too, say hello.</p>
       <div class="links">
         <a href="mailto:shashank1ga21is147@gmail.com"><span class="lbl">Email</span>shashank1ga21is147@gmail.com</a>
-        <a href="tel:+919591939431"><span class="lbl">Phone</span>+91 959-193-9431</a>
+        <a href="tel:+919591939431"><span class="lbl">Phone</span>+91 9591939431</a>
         <a href="https://linkedin.com/in/shashankbr2709" target="_blank" rel="noopener"><span class="lbl">LinkedIn</span>linkedin.com/in/shashankbr2709</a>
         <a href="https://github.com/shashankbr27" target="_blank" rel="noopener"><span class="lbl">GitHub</span>github.com/shashankbr27</a>
       </div>
@@ -540,7 +553,7 @@ const STATIONS = [
         <div class="thanks-title">Thank you!</div>
         <button class="restart" type="button" data-restart><span class="up" aria-hidden="true">↑</span>Go to start</button>
       </div>`,
-    meta: 'Bengaluru, India · open to AI & Robotics work',
+    meta: 'Bengaluru, India · open to relocating to Berlin / Potsdam',
   },
 ];
 
@@ -858,7 +871,7 @@ function buildStack() {
   return g;
 }
 
-// 6. NAYANTRA — autonomous mobile rover with spinning LiDAR, on a floor map
+// 7. NAYANTRA — autonomous mobile rover with spinning LiDAR, on a floor map
 function buildNayantra() {
   const g = new THREE.Group();
   // floor nav map decal
@@ -898,7 +911,115 @@ function buildNayantra() {
   return g;
 }
 
-// 4. THILI — surveillance video wall: four camera feeds with detection boxes and one
+// 4. HUSKY — Husky UGV with a spinning LiDAR, a drone hovering over a person inside a
+//    restricted zone, and a BEV screen: overhead map, zone, detection and the planned path
+function buildHusky() {
+  const g = new THREE.Group();
+  const matHusky = new THREE.MeshStandardMaterial({ color: C('#d9a514'), roughness: 0.5, metalness: 0.25 });
+  const matTyre = new THREE.MeshStandardMaterial({ color: C('#101418'), roughness: 0.85 });
+
+  // BEV screen on a stand, behind the action
+  for (const x of [-0.8, 0.8]) {
+    const leg = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.15, 0.08), matSteel);
+    leg.position.set(x, 0.575, -0.9); g.add(leg);
+  }
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(2.1, 1.6, 0.1), matDark);
+  frame.position.set(0, 1.95, -0.9); frame.castShadow = true; g.add(frame);
+  const bev = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.5), screenMat((c, w, h) => {
+    c.fillStyle = '#06141a'; c.fillRect(0, 0, w, h);
+    // overhead "satellite" tiles: blocks + roads
+    c.fillStyle = '#0d2a2f';
+    for (const [x, y, bw, bh] of [[30, 70, 150, 90], [220, 40, 110, 70], [40, 210, 120, 110], [210, 300, 160, 90], [470, 330, 130, 110], [430, 40, 150, 60]]) c.fillRect(x, y, bw, bh);
+    c.strokeStyle = 'rgba(120,200,210,0.14)'; c.lineWidth = 1;
+    for (let x = 0; x <= w; x += 40) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke(); }
+    for (let y = 0; y <= h; y += 40) { c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke(); }
+    // restricted zone: hatched, red dashed border
+    c.save(); c.beginPath(); c.rect(370, 100, 210, 170); c.clip();
+    c.fillStyle = 'rgba(255,80,80,0.10)'; c.fillRect(370, 100, 210, 170);
+    c.strokeStyle = 'rgba(255,100,100,0.35)'; c.lineWidth = 2;
+    for (let k = -200; k < 400; k += 16) { c.beginPath(); c.moveTo(370 + k, 270); c.lineTo(370 + k + 170, 100); c.stroke(); }
+    c.restore();
+    c.strokeStyle = '#ff6b6b'; c.lineWidth = 3; c.setLineDash([12, 8]); c.strokeRect(370, 100, 210, 170); c.setLineDash([]);
+    c.fillStyle = '#ff6b6b'; c.font = 'bold 15px monospace'; c.fillText('RESTRICTED ZONE', 382, 124);
+    // detected person
+    c.fillStyle = 'rgba(210,235,240,0.85)'; c.beginPath(); c.arc(470, 190, 7, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = '#33e6b0'; c.lineWidth = 2.5; c.strokeRect(452, 172, 36, 36);
+    c.fillStyle = '#33e6b0'; c.fillRect(452, 154, 70, 16);
+    c.fillStyle = '#04141a'; c.font = 'bold 12px monospace'; c.fillText('person', 457, 166);
+    // Husky + planned path to the person
+    c.strokeStyle = '#b58cff'; c.lineWidth = 4; c.setLineDash([11, 8]);
+    c.beginPath(); c.moveTo(130, 400); c.lineTo(250, 270); c.lineTo(400, 255); c.lineTo(448, 212); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#b58cff'; c.beginPath(); c.moveTo(452, 208); c.lineTo(432, 208); c.lineTo(446, 193); c.closePath(); c.fill();
+    c.save(); c.translate(130, 400); c.rotate(-0.8);
+    c.fillStyle = '#d9a514'; c.fillRect(-20, -13, 40, 26); c.fillStyle = '#04141a'; c.fillRect(8, -9, 8, 18); c.restore();
+    // readout
+    c.fillStyle = '#cfe6ff'; c.font = 'bold 18px monospace'; c.fillText('BEV · drone + satellite', 22, 30);
+    c.fillStyle = '#04141a'; c.fillRect(16, h - 52, w - 32, 34);
+    c.fillStyle = '#33e6b0'; c.font = '16px monospace'; c.fillText('action → navigate_to(person)', 28, h - 29);
+  }, 640, 480));
+  bev.position.set(0, 1.95, -0.845); g.add(bev);
+
+  // Husky UGV, angled toward the walkway
+  const robot = new THREE.Group();
+  robot.position.set(-0.45, 0, 0.55); robot.rotation.y = 0.5;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.32, 1.2), matHusky);
+  body.position.y = 0.36; body.castShadow = true; robot.add(body);
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.04, 1.08), matDark);
+  deck.position.y = 0.54; robot.add(deck);
+  for (const z of [0.64, -0.64]) {
+    const bumper = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.14, 0.08), matDark);
+    bumper.position.set(0, 0.3, z); robot.add(bumper);
+  }
+  const wheelGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.16, 20);
+  for (const [x, z] of [[-0.48, -0.4], [0.48, -0.4], [-0.48, 0.4], [0.48, 0.4]]) {
+    const wh = new THREE.Mesh(wheelGeo, matTyre);
+    wh.rotation.z = Math.PI / 2; wh.position.set(x, 0.22, z); wh.castShadow = true; robot.add(wh);
+  }
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.3, 10), matSteel);
+  mast.position.set(0, 0.71, -0.2); robot.add(mast);
+  const lidar = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.12, 24),
+    new THREE.MeshStandardMaterial({ color: C('#1a2028'), emissive: C('#33e6b0'), emissiveIntensity: 0.6, roughness: 0.5, metalness: 0.4 }));
+  lidar.position.set(0, 0.92, -0.2); robot.add(lidar);
+  g.add(robot);
+  g.userData.spin = lidar;
+
+  // person standing inside a restricted-zone ring, watched by the drone
+  const pX = 1.3, pZ = 0.6;
+  const zone = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.02, 8, 48),
+    new THREE.MeshStandardMaterial({ color: C('#2a0c0c'), emissive: C('#ff4d4d'), emissiveIntensity: 1.2, roughness: 0.5 }));
+  zone.rotation.x = Math.PI / 2; zone.position.set(pX, 0.02, pZ); g.add(zone);
+  const personBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.55, 6, 12), matWhitePlastic);
+  personBody.position.set(pX, 0.6, pZ); personBody.castShadow = true; g.add(personBody);
+  const personHead = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 12), matWhitePlastic);
+  personHead.position.set(pX, 1.18, pZ); g.add(personHead);
+  const beam = new THREE.Mesh(new THREE.ConeGeometry(0.62, 2.4, 28, 1, true),
+    new THREE.MeshBasicMaterial({ color: C('#33e6b0'), transparent: true, opacity: 0.07, side: THREE.DoubleSide, depthWrite: false }));
+  beam.position.set(pX, 1.25, pZ); g.add(beam);
+
+  // quadcopter hovering over them
+  const drone = new THREE.Group();
+  drone.position.set(pX, 2.5, pZ);
+  drone.add(new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.08, 0.24), matDark));
+  for (const a of [Math.PI / 4, -Math.PI / 4]) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.025, 0.04), matSteel);
+    arm.rotation.y = a; drone.add(arm);
+  }
+  const blades = [];
+  for (const [x, z] of [[0.28, 0.28], [-0.28, 0.28], [0.28, -0.28], [-0.28, -0.28]]) {
+    const halo = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.006, 20),
+      new THREE.MeshStandardMaterial({ color: C('#0c2622'), emissive: C('#33e6b0'), emissiveIntensity: 0.5, transparent: true, opacity: 0.4 }));
+    halo.position.set(x, 0.045, z); drone.add(halo);
+    const blade = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.01, 0.025), matDark);
+    blade.position.set(x, 0.055, z); drone.add(blade); blades.push(blade);
+  }
+  const gimbal = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 10), matAccent);
+  gimbal.position.y = -0.08; drone.add(gimbal);
+  g.add(drone);
+  g.userData.drone = { group: drone, blades, baseY: 2.5 };
+  return g;
+}
+
+// 5. THILI — surveillance video wall: four camera feeds with detection boxes and one
 //    track hopping between them (cross-camera tracking), plus a panning dome camera
 function buildThili() {
   const g = new THREE.Group();
@@ -958,7 +1079,7 @@ function buildThili() {
   return g;
 }
 
-// 5. SENSOR FUSION — bench with a radar panel, a 4x4 acoustic array and an LWIR thermal
+// 6. SENSOR FUSION — bench with a radar panel, a 4x4 acoustic array and an LWIR thermal
 //    imager in front of a display that overlays all three (radar plot + thermal + bearing)
 function buildFusion() {
   const g = new THREE.Group();
@@ -1047,7 +1168,7 @@ function buildFusion() {
   return g;
 }
 
-// 7. COSMIC EYES — pan-tilt camera head with lens cluster on a stand
+// 8. COSMIC EYES — pan-tilt camera head with lens cluster on a stand
 function buildCosmic() {
   const g = new THREE.Group();
   const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.14, 1.4, 12), matSteel);
@@ -1071,7 +1192,7 @@ function buildCosmic() {
   return g;
 }
 
-// 8. SKILLS — instrument wall: grid of emissive tiles/gauges on a panel
+// 9. SKILLS — instrument wall: grid of emissive tiles/gauges on a panel
 function buildSkills() {
   const g = new THREE.Group();
   const panel = new THREE.Mesh(new THREE.BoxGeometry(3.0, 2.2, 0.15), matDark);
@@ -1092,7 +1213,7 @@ function buildSkills() {
   return g;
 }
 
-// 9. CONTACT — exit access terminal (kiosk with screen) + lit doorway
+// 10. CONTACT — exit access terminal (kiosk with screen) + lit doorway
 function buildContact() {
   const g = new THREE.Group();
   // lit doorway on the back
@@ -1117,7 +1238,7 @@ function buildContact() {
 }
 
 // same order as STATIONS
-const BUILDERS = [buildEducation, buildIntern, buildPerception, buildStack, buildThili, buildFusion, buildNayantra, buildCosmic, buildSkills, buildContact];
+const BUILDERS = [buildEducation, buildIntern, buildPerception, buildStack, buildHusky, buildThili, buildFusion, buildNayantra, buildCosmic, buildSkills, buildContact];
 
 // ---------------------------------------------------------------------------
 // Place objects + per-station key lights; build camera waypoints
@@ -1139,7 +1260,7 @@ STATIONS.forEach((st, i) => {
   grp.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;   // face the walkway
   scene.add(grp);
   st._group = grp;
-  if (grp.userData.rover || grp.userData.head) animated.push(grp);
+  if (grp.userData.rover || grp.userData.head || grp.userData.spin || grp.userData.drone) animated.push(grp);
 
   // key light for the object (kept few + modest to protect fill-rate)
   if (!isMobile || i % 2 === 0) {
@@ -1227,9 +1348,9 @@ function overtureOpacityFor(p) {
 // Build HTML panels
 // ---------------------------------------------------------------------------
 const panelsEl = document.getElementById('panels');
-const panelEls = STATIONS.map((st) => {
+const panelEls = STATIONS.map((st, i) => {
   const el = document.createElement('div');
-  el.className = 'panel' + (st.contact ? ' contact' : '');
+  el.className = 'panel' + (st.contact ? ' contact' : '') + (i % 2 ? ' right' : '');   // odd stations sit on the right wall
   el.innerHTML = `
     <div class="kicker">${st.kicker}</div>
     <h2>${st.title}</h2>
@@ -1365,6 +1486,12 @@ function tick() {
   for (const g of animated) {
     if (g.userData.rover) g.userData.rover.userData.lidar.rotation.y += 0.05;
     if (g.userData.head) g.userData.head.rotation.y = Math.sin(frame * 0.01) * 0.4;
+    if (g.userData.spin) g.userData.spin.rotation.y += 0.05;
+    if (g.userData.drone) {
+      const d = g.userData.drone;
+      d.group.position.y = d.baseY + Math.sin(frame * 0.02) * 0.06;
+      for (const b of d.blades) b.rotation.y += 0.7;
+    }
   }
 
   // drifting bio-motes
