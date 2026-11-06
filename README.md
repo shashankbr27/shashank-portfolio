@@ -43,13 +43,13 @@ nature* argues the chapter — not just decoration:
 | # | Object | Chapter | Why this object |
 |---|--------|---------|-----------------|
 | Overture | The hall itself | Name + role + hook | You're standing at the lab door. |
-| 1 | Drafting table + blueprint board | **Education** (B.E. ISE, GAT) | Where the fundamentals were drawn up. |
+| 1 | Drafting table + blueprint board | **Education** (B.E. ISE, GAT, relevant coursework) | Where the fundamentals were drawn up. |
 | 2 | Voice console + two paired robots | **AI & Robotics Intern** | The speech-to-speech pipeline (console) and the MCP-based multi-robot coordination (the pair). |
-| 3 | Robot arm + RGB coordinate gizmo | **Perception validation** | Pose / coordinate-transform accuracy — the gizmo *is* the coordinate frame being calibrated. |
-| 4 | GPU server rack + benchmark screen | **VLM stack swap & latency** | LLaVA/Qwen-VL + SAM2 + Grounding DINO v2 replacing Cosmos, −30% chatbot latency, refactor/tests. |
-| 5 | Husky UGV + hovering drone + BEV screen | **VLA navigation** | OmniVLA-based navigation: drone/satellite view finds a person in a restricted zone, the Husky gets a structured navigation action. |
+| 3 | Robot arm + RGB coordinate gizmo | **Sim-to-real readiness** | Pose / coordinate-transform accuracy — the gizmo *is* the coordinate frame being calibrated. |
+| 4 | GPU server rack + benchmark screen | **VLM stack swap & latency** | LLaVA/Qwen-VL + SAM2 + Grounding DINO v2 replacing Cosmos, −30% assistant response latency, refactor/tests. |
+| 5 | Husky UGV + hovering drone + BEV screen | **VLA navigation** | OmniVLA fine-tuned with imitation learning: language goals plus drone/satellite/BEV views become navigation actions for a Husky A300 toward a person in a restricted zone. |
 | 6 | Video wall + panning dome camera | **Thili** | Detection/action modules, and one track hopping between camera feeds (cross-camera tracking). |
-| 7 | Radar + acoustic array + LWIR imager, fused display | **Sensor-fusion research** | Radar (ARD 548 RDI), acoustic array (microDSP) and thermal imager for infiltration detection. |
+| 7 | Radar + acoustic array + LWIR imager, fused display | **Sensor-fusion prototype** | Radar (ARD 548 RDI), acoustic array (microDSP) and thermal imager for infiltration detection. |
 | 8 | Autonomous rover + LiDAR on a nav map | **Nayantra** | A Nav2 robot on a planned path — the thing itself. Meta line links to the GitHub repo. |
 | 9 | Pan-tilt camera head, three lenses | **Cosmic Eyes** | A perception rig that reads a scene and predicts the next step. |
 | 10 | Instrument wall of lit tiles | **Skills** | Breadth of the stack wired to one bench. |
@@ -57,8 +57,9 @@ nature* argues the chapter — not just decoration:
 
 ### Deliberately left out
 
-- **AMAR** and the education coursework list — neither is on the current résumé, so
-  both were removed (they are still in git history).
+- **AMAR** and the **CGPA** — neither is on the current résumé, so both were removed
+  (they are still in git history). The education coursework list is back on the
+  résumé, so the education station shows it again.
 - The ARTPARK work email; the contact station uses the personal email, phone,
   LinkedIn and GitHub from the résumé.
 - Contact links: GitHub is `github.com/shashankbr27`; LinkedIn points at and

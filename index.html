@@ -405,8 +405,8 @@
     <div class="kicker">Autonomous Systems Lab — Bengaluru</div>
     <h1>Shashank<br>B R</h1>
     <div class="role">AI &amp; Robotics Engineer · Vision Language Models · Physical AI</div>
-    <p class="hook">I build vision-language perception and language-to-action systems for autonomous robots — from VLM object grounding to ROS 2 / Nav2 execution, fusing LiDAR, depth, radar, acoustic and thermal sensing, and validating in simulation before real-robot bring-up. Walk the lab — every bench is one thing I've built.</p>
-    <div class="tease">Next — reliable Physical AI, beyond neural networks</div>
+    <p class="hook">I build vision-language perception and language-to-action systems for autonomous robots — fine-tuning OmniVLA to navigate a Husky A300 UGV from language goals and aerial/BEV views, and integrating ROS 2, Nav2 and multi-sensor fusion, validated in Isaac Sim before real-robot bring-up. Walk the lab — every bench is one thing I've built.</p>
+    <div class="tease">Next — reliable Physical AI for heavy mobile machinery</div>
   </div>
 
   <div id="panels"></div>
@@ -451,7 +451,7 @@ const STATIONS = [
     title: 'Where the schematics started',
     html: `
       <p><strong>B.E., Information Science &amp; Engineering</strong> at Global Academy of Technology — the drafting table where the fundamentals were laid down.</p>
-      <p>CGPA <strong>7.81 / 10.0</strong>.</p>`,
+      <p>Relevant coursework: <strong>Data Structures, Unix shell programming, Machine Learning, Big Data Analytics, Deep Learning</strong>.</p>`,
     meta: 'B.E. ISE · Global Academy of Technology · Dec 2021 – Jun 2025',
   },
   {
@@ -468,8 +468,8 @@ const STATIONS = [
     kicker: 'ARTPARK · Associate Engineer',
     title: 'Calibrating the world before the robot moves',
     html: `
-      <p>Validated navigation <strong>pose estimates and coordinate transforms</strong> before deployment, and reconstructed dense 3D scene maps from multi-view imagery with <strong>COLMAP</strong>.</p>
-      <p>Ran <strong>Isaac Sim</strong> trials to identify localization issues before robot bring-up.</p>`,
+      <p>Checked <strong>sim-to-real readiness</strong> before real-robot bring-up: validated <strong>pose estimates and coordinate transforms</strong>, and reconstructed dense 3D scene maps from multi-view imagery with <strong>COLMAP</strong>.</p>
+      <p>Ran <strong>Isaac Sim</strong> trials to catch localization faults early.</p>`,
     meta: 'Associate Engineer, GenAI & Robotics · ARTPARK, IISc · Jul 2025 – Present',
   },
   {
@@ -478,7 +478,7 @@ const STATIONS = [
     title: 'Choosing the model, then making it fast',
     html: `
       <p>Replaced the NVIDIA Cosmos perception stack with a lighter <strong>LLaVA / Qwen-VL pipeline integrated with SAM2 and Grounding DINO v2</strong> — less GPU overhead, better spatial grounding for real-time object detection.</p>
-      <p>Cut end-to-end chatbot latency <strong>30%</strong> through parallelized gRPC integration and retrieval improvements, extended query coverage across the vision-analytics stack, and refactored and tested the codebase for reliability.</p>`,
+      <p>Cut end-to-end assistant response latency <strong>30%</strong> by parallelizing gRPC calls and improving RAG retrieval, then refactored and added tests to the vision-analytics codebase — removing redundant paths and making it more reliable.</p>`,
     meta: 'Associate Engineer · ARTPARK, IISc · Jul 2025 – Present',
   },
   {
@@ -486,27 +486,27 @@ const STATIONS = [
     kicker: 'ARTPARK · VLA Navigation',
     title: 'Husky — eyes in the sky, actions on the ground',
     html: `
-      <p>Developed an <strong>OmniVLA-based navigation pipeline</strong> for a Husky UGV, using <strong>drone and satellite views</strong> (BEV) to identify people in restricted zones and inform navigation decisions.</p>
-      <p>The model translates visual context into <strong>structured navigation actions</strong>, evaluated on target identification, action correctness and goal-reaching performance.</p>`,
-    meta: 'Husky UGV · VLA navigation · ARTPARK, IISc · Jul 2025 – Present',
+      <p>Fine-tuned <strong>OmniVLA</strong>, a vision-language-action model, in <strong>PyTorch with imitation learning</strong>, so a <strong>Husky A300 UGV</strong> turns language goals plus <strong>drone, satellite and BEV views</strong> into navigation actions toward people in restricted zones.</p>
+      <p>Evaluated the policy on <strong>target identification, action correctness and goal-reaching success</strong>.</p>`,
+    meta: 'Husky A300 UGV · VLA navigation · ARTPARK, IISc · Jul 2025 – Present',
   },
   {
     id: 'thili',
     kicker: 'ARTPARK · Thili',
     title: 'Thili — one watch across every camera',
     html: `
-      <p>Contributed <strong>object-detection and action-recognition modules</strong> to Thili, a smart AI-powered security-surveillance and real-time video-analytics platform.</p>
+      <p>Built <strong>object-detection and action-recognition modules</strong> for Thili, a real-time video-analytics platform.</p>
       <p>Worked on <strong>cross-camera trajectory tracking</strong> and developed a <strong>Flutter Android application</strong> for Thili.</p>`,
     meta: 'Thili · Associate Engineer · ARTPARK, IISc · Jul 2025 – Present',
   },
   {
     id: 'fusion',
-    kicker: 'ARTPARK · Research',
+    kicker: 'ARTPARK · Sensor Fusion',
     title: 'Radar, sound and heat — one fused picture',
     html: `
-      <p>Researched <strong>multimodal sensor fusion and analytics</strong> for infiltration detection along the LoC.</p>
-      <p>Sensors studied: <strong>Radar</strong> (ARD 548 RDI), an <strong>acoustic array</strong> (microDSP) and a <strong>thermal imager</strong> (LWIR).</p>`,
-    meta: 'Sensor fusion research · ARTPARK, IISc · Radar + Acoustic + LWIR',
+      <p>Prototyped <strong>multimodal sensor fusion and analytics</strong> for infiltration detection along the LoC.</p>
+      <p>Sensors fused: <strong>Radar</strong> (ARD 548 RDI), an <strong>acoustic array</strong> (microDSP) and a <strong>thermal imager</strong> (LWIR).</p>`,
+    meta: 'Sensor-fusion prototype · ARTPARK, IISc · Radar + Acoustic + LWIR',
   },
   {
     id: 'nayantra',
@@ -514,7 +514,7 @@ const STATIONS = [
     title: 'Nayantra — from a sentence to a fleet',
     html: `
       <p>An <strong>agentic operations platform for heterogeneous robot fleets</strong>: an open-source language-to-action system that turns natural-language goals into <strong>schema-validated tool calls</strong>, dispatches navigation through <strong>ROS 2 / Nav2</strong>, monitors execution and <strong>replans on failure</strong>.</p>
-      <p>Evolved toward multi-fleet orchestration — a <strong>shared world model, task allocation, traffic coordination, safety constraints</strong> and robot-adapter interfaces.</p>`,
+      <p>Evolved it into an orchestration platform for multiple robot fleets — a <strong>shared world model, task allocation, traffic coordination, safety constraints</strong> and robot-adapter interfaces.</p>`,
     meta: 'Nayantra · <a href="https://github.com/shashankbr27/nayantra" target="_blank" rel="noopener">github.com/shashankbr27/nayantra</a> · Mar 2026 – Present',
   },
   {
@@ -530,9 +530,9 @@ const STATIONS = [
     kicker: 'The instrument wall',
     title: 'Everything wired to the bench',
     html: `
-      <p><strong>VLM, VLA &amp; Perception:</strong> VLA training, OpenVLA, RT-2, LLaVA, Qwen-VL, OmniVLA, NVIDIA Cosmos Reason/Predict, SAM, Grounding DINO, RT-DETR, BEV, OpenCV, Transformers, COLMAP.</p>
-      <p><strong>Robotics &amp; Autonomy:</strong> ROS 2, Nav2, SLAM, AMCL, OpenRMF, motion planning, sensor fusion, LiDAR, Intel RealSense, Gazebo, RViz, Isaac Sim.</p>
-      <p><strong>AI Systems:</strong> structured tool calling, agentic orchestration, MCP, RAG, multi-provider LLM routing, fine-tuning.</p>
+      <p><strong>VLM, VLA &amp; Perception:</strong> Qwen-VL, OpenVLA, LLaVA, OmniVLA, NVIDIA Cosmos, imitation learning, LoRA fine-tuning · PyTorch, Transformers, OpenCV, SAM2, Grounding DINO, RT-DETR, COLMAP, BEV.</p>
+      <p><strong>Robotics &amp; Autonomy:</strong> ROS 2, Nav2, SLAM, AMCL, OpenRMF, motion planning, sensor fusion (LiDAR, depth, radar), Gazebo, RViz, Isaac Sim.</p>
+      <p><strong>AI Systems:</strong> agentic orchestration, MCP, RAG, multi-provider LLM routing, fine-tuning.</p>
       <p><strong>Languages &amp; Stack:</strong> Python, C++, C, Java · FastAPI, gRPC, REST, WebSockets, Flutter, MERN · Git, GitHub, Docker, Linux · MySQL, MongoDB, PostgreSQL.</p>`,
     meta: 'Selected tooling across VLM/VLA, robotics autonomy and AI systems',
   },
@@ -542,7 +542,7 @@ const STATIONS = [
     title: "Let's build the next one",
     contact: true,
     html: `
-      <p>Keen to build reliable Physical AI for heavy mobile machinery working in real industrial environments — beyond neural networks. If that's your world too, say hello.</p>
+      <p>Keen to build reliable Physical AI for heavy mobile machinery working in real industrial environments. If that's your world too, say hello.</p>
       <div class="links">
         <a href="mailto:shashank1ga21is147@gmail.com"><span class="lbl">Email</span>shashank1ga21is147@gmail.com</a>
         <a href="tel:+919591939431"><span class="lbl">Phone</span>+91 9591939431</a>
